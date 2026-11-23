@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
         <title>Publicación en catálogo - Biblioteca Escolar CBTa No. 5</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,14 +18,13 @@
                 --green-success: #1f6b47;
                 --green-soft: #e6f4ec;
                 --blue-accent: #1e3a8a;
-                --red-alert: #b42318;
-                --red-soft: #fee4e2;
                 --gray-light: #f5f7f6;
                 --text-main: #212121;
                 --text-muted: #4b5563;
                 --border-card: #e5e7eb;
                 --border-field: #d0d5dd;
             }
+
             body {
                 font-family: "Poppins", "Segoe UI", Arial, sans-serif;
                 font-size: 14px;
@@ -34,13 +32,15 @@
                 color: var(--text-main);
                 background-color: var(--gray-light);
             }
+
+            /* ---------- Layout y menú lateral ---------- */
             .admin-layout {
                 display: flex;
                 min-height: 100vh;
-                background: linear-gradient(to right, var(--green-main) 220px, transparent 220px);
+                background: linear-gradient(to right, var(--green-main) 200px, transparent 200px);
             }
             .sidebar {
-                width: 220px;
+                width: 200px;
                 flex-shrink: 0;
                 background-color: var(--green-main);
                 color: #fff;
@@ -60,7 +60,7 @@
                 color: #fff;
             }
             .sidebar-brand img {
-                height: 34px;
+                height: 38px;
                 width: auto;
             }
             .sidebar-brand .brand-name {
@@ -83,9 +83,9 @@
                 display: flex;
                 align-items: center;
                 gap: 12px;
-                padding: 9px 18px;
+                padding: 8px 16px;
                 color: #fff;
-                font-size: 13px;
+                font-size: 12.5px;
                 line-height: 1.25;
                 text-decoration: none;
                 border-left: 4px solid transparent;
@@ -143,24 +143,26 @@
                 padding-top: 4px;
                 margin-bottom: 8px;
             }
+
+            /* ---------- Contenido principal ---------- */
             .admin-main {
                 flex-grow: 1;
                 min-width: 0;
-                padding: 36px 40px;
+                padding: 28px 32px;
             }
             .admin-content {
-                max-width: 1100px;
+                max-width: 1360px;
                 margin: 0 auto;
             }
             .page-title {
-                font-size: 28px;
+                font-size: 24px;
                 font-weight: 600;
                 color: var(--green-main);
                 margin: 0 0 6px 0;
             }
             .page-subtitle {
                 color: var(--text-muted);
-                font-size: 14px;
+                font-size: 13px;
                 margin: 0 0 22px 0;
             }
             @media (max-width: 991.98px) {
@@ -188,14 +190,15 @@
                 stroke-linejoin: round;
                 flex-shrink: 0;
             }
+
+            /* ---------- Botones ---------- */
             .btn-brand,
-            .btn-brand-outline,
-            .btn-outline-brand,
-            .btn-danger-outline {
+            .btn-outline-brand {
                 font-weight: 500;
                 border-radius: 8px;
-                padding: 8px 18px;
-                min-height: 42px;
+                padding: 6px 14px;
+                min-height: 36px;
+                font-size: 13px;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -221,73 +224,18 @@
                 background-color: var(--green-soft);
                 color: var(--green-main);
             }
-            .btn-danger-outline {
-                background-color: #fff;
-                color: var(--red-alert);
-                border: 1.5px solid var(--red-alert);
-            }
-            .btn-danger-outline:hover {
-                background-color: var(--red-soft);
-                color: var(--red-alert);
-            }
-            .btn-brand-outline {
-                background-color: transparent;
-                color: #fff;
-                border: 1.5px solid #fff;
-            }
-            .btn-brand-outline:hover {
-                background-color: rgba(255, 255, 255, 0.12);
-                color: #fff;
-            }
             .btn:focus-visible,
             a:focus-visible {
                 outline: 3px solid var(--blue-accent);
                 outline-offset: 2px;
             }
+
+            /* ---------- Panel, etiquetas y tabla ---------- */
             .panel {
                 background-color: #fff;
                 border: 1px solid var(--border-card);
                 border-radius: 12px;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            }
-            .panel-head {
-                display: flex;
-                align-items: center;
-                gap: 14px;
-                padding: 20px 24px;
-            }
-            .panel-head h2 {
-                font-size: 24px;
-                font-weight: 600;
-                margin: 0;
-            }
-            .panel-head p {
-                margin: 0;
-                color: var(--text-muted);
-                font-size: 15px;
-            }
-            .icon-circle {
-                width: 48px;
-                height: 48px;
-                border-radius: 50%;
-                background-color: var(--green-soft);
-                color: var(--green-main);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-            .icon-circle.red {
-                background-color: var(--red-soft);
-                color: var(--red-alert);
-            }
-            .icon-circle.blue {
-                background-color: #e0e7ff;
-                color: var(--blue-accent);
-            }
-            .icon-circle.gray {
-                background-color: #f2f4f7;
-                color: var(--text-muted);
             }
             .tag {
                 display: inline-flex;
@@ -311,35 +259,6 @@
                 color: #475467;
                 background-color: #f2f4f7;
             }
-            .tag-blue {
-                color: var(--blue-accent);
-                background-color: #e0e7ff;
-            }
-            .tag-red {
-                color: var(--red-alert);
-                background-color: var(--red-soft);
-            }
-            .tag-new {
-                color: #fff;
-                background-color: var(--green-main);
-                padding: 1px 10px;
-                font-size: 12px;
-            }
-            .link-arrow {
-                color: var(--blue-accent);
-                font-weight: 500;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-            }
-            .link-arrow:hover {
-                text-decoration: underline;
-            }
-            .link-arrow .icon {
-                width: 16px;
-                height: 16px;
-            }
             .table-lib {
                 margin: 0;
                 --bs-table-bg: transparent;
@@ -348,12 +267,13 @@
                 background-color: var(--gray-light);
                 font-weight: 600;
                 font-size: 13px;
-                padding: 12px 20px;
+                padding: 10px 12px;
                 border-bottom: 0;
                 white-space: nowrap;
             }
             .table-lib td {
-                padding: 12px 20px;
+                padding: 10px 12px;
+                font-size: 13px;
                 vertical-align: middle;
                 border-color: var(--border-card);
             }
@@ -365,33 +285,9 @@
             .table-lib tr.row-selected {
                 --bs-table-bg: var(--green-soft);
             }
-            .table-lib tr.row-selected > td:first-child,
-            .table-lib tr.row-red > td:first-child {
+            .table-lib tr.row-selected > td:first-child {
                 border-left: 4px solid var(--green-main);
             }
-            .table-lib tr.row-red {
-                --bs-table-bg: var(--red-soft);
-            }
-            .table-lib tr.row-red > td:first-child {
-                border-left-color: var(--red-alert);
-            }
-            .text-red {
-                color: var(--red-alert);
-            }
-            .text-amber {
-                color: #92400e;
-            }
-            .text-green {
-                color: var(--green-main);
-            }
-            .site-footer-strip {
-                background-color: var(--green-dark);
-                color: #fff;
-                text-align: center;
-                font-size: 14px;
-                padding: 16px 0;
-            }
-
             .cover-mini {
                 width: 96px;
                 height: 144px;
@@ -400,64 +296,64 @@
                 padding: 8px;
                 flex-shrink: 0;
             }
-        </style>
-        <style data-ajuste="2">
-            .admin-layout {
-                background: linear-gradient(to right, var(--green-main) 200px, transparent 200px);
+
+            /* ---------- Modal Cambiar contraseña ---------- */
+            .pw-icon {
+                width: 20px;
+                height: 20px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.75;
+                stroke-linecap: round;
+                stroke-linejoin: round;
             }
-            .sidebar {
-                width: 200px;
+            .pw-circle {
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                background-color: var(--green-soft);
+                color: var(--green-main);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
             }
-            .sidebar-brand img {
-                height: 38px;
+            .pw-group {
+                position: relative;
             }
-            .sidebar-menu a {
-                padding: 8px 16px;
-                font-size: 12.5px;
+            .pw-group .pw-left {
+                position: absolute;
+                left: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-muted);
             }
-            .admin-main {
-                padding: 28px 32px;
+            .pw-group .form-control {
+                height: 48px;
+                padding-left: 44px;
+                padding-right: 46px;
+                border-color: var(--border-field);
+                border-radius: 8px;
             }
-            .admin-content {
-                max-width: 1360px;
+            .pw-group .form-control:focus {
+                border-color: var(--green-medium);
+                box-shadow: 0 0 0 3px rgba(46, 125, 88, 0.2);
             }
-            .table-lib thead th,
-            .table-lib td {
-                padding: 10px 12px;
-                font-size: 13px;
-            }
-            .page-title {
-                font-size: 24px;
-            }
-            .page-subtitle {
-                font-size: 13px;
-            }
-            .panel-head {
-                padding: 16px 20px;
-            }
-            .panel-head h2 {
-                font-size: 20px;
-            }
-            .panel-head p {
-                font-size: 13px;
-            }
-            .icon-circle {
-                width: 40px;
-                height: 40px;
-            }
-            .btn-brand,
-            .btn-outline-brand,
-            .btn-brand-outline,
-            .btn-danger-outline {
-                min-height: 36px;
-                padding: 6px 14px;
-                font-size: 13px;
+            .pw-group .pw-toggle {
+                position: absolute;
+                right: 6px;
+                top: 50%;
+                transform: translateY(-50%);
+                border: 0;
+                background: transparent;
+                color: var(--text-muted);
+                padding: 8px;
             }
         </style>
     </head>
 
     <body>
-        <!-- Iconos (set Lucide, trazo lineal) -->
+        <!-- Iconos SVG usados en esta página -->
         <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
             <symbol id="i-clipboard-list" viewBox="0 0 24 24">
                 <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
@@ -469,9 +365,7 @@
             </symbol>
             <symbol id="i-book-open" viewBox="0 0 24 24">
                 <path d="M12 7v14" />
-                <path
-                    d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
-                />
+                <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
             </symbol>
             <symbol id="i-layout-dashboard" viewBox="0 0 24 24">
                 <rect width="7" height="9" x="3" y="3" rx="1" />
@@ -501,30 +395,12 @@
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
             </symbol>
-            <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></symbol>
-            <symbol id="i-clock" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
+            <symbol id="i-chevron-right" viewBox="0 0 24 24">
+                <path d="m9 18 6-6-6-6" />
             </symbol>
-            <symbol id="i-triangle-alert" viewBox="0 0 24 24">
-                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
-                <path d="M12 9v4" />
-                <path d="M12 17h.01" />
-            </symbol>
-            <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></symbol>
             <symbol id="i-search" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.3-4.3" />
-            </symbol>
-            <symbol id="i-refresh" viewBox="0 0 24 24">
-                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-                <path d="M21 3v5h-5" />
-                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-                <path d="M8 16H3v5" />
-            </symbol>
-            <symbol id="i-arrow-right" viewBox="0 0 24 24">
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
             </symbol>
             <symbol id="i-circle-check" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />
@@ -540,24 +416,20 @@
                 <path d="m17 8-5-5-5 5" />
                 <path d="M12 3v12" />
             </symbol>
-            <symbol id="i-file-text" viewBox="0 0 24 24">
-                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                <path d="M10 9H8" />
-                <path d="M16 13H8" />
-                <path d="M16 17H8" />
+            <symbol id="pw-eye" viewBox="0 0 24 24">
+                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+                <circle cx="12" cy="12" r="3" />
             </symbol>
-            <symbol id="i-id-card" viewBox="0 0 24 24">
-                <path d="M16 10h2" />
-                <path d="M16 14h2" />
-                <path d="M6.17 15a3 3 0 0 1 5.66 0" />
-                <circle cx="9" cy="11" r="2" />
-                <rect x="2" y="5" width="20" height="14" rx="2" />
+            <symbol id="pw-eye-off" viewBox="0 0 24 24">
+                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
+                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
+                <path d="m2 2 20 20" />
             </symbol>
         </svg>
 
         <div class="admin-layout">
-            <!-- Menu lateral del bibliotecario -->
+            <!-- Menú lateral del bibliotecario -->
             <aside class="sidebar">
                 <a href="panel_control.php" class="sidebar-brand">
                     <img src="./img/logo-cbta5-blanco.png" alt="Logotipo del CBTa No. 5" />
@@ -570,25 +442,25 @@
                 <div class="sidebar-main">
                     <ul class="sidebar-menu">
                         <li>
-                            <a href="gestion_reservas.php"
-                                ><svg class="icon"><use href="#i-clipboard-list" /></svg> Gestión de reservas</a
-                            >
+                            <a href="gestion_reservas.php">
+                                <svg class="icon"><use href="#i-clipboard-list" /></svg> Gestión de reservas
+                            </a>
                         </li>
                         <li>
-                            <a href="publicacion_catalogo.php" class="active" aria-current="page"
-                                ><svg class="icon"><use href="#i-book-open" /></svg> Publicación en catálogo</a
-                            >
+                            <a href="publicacion_catalogo.php" class="active" aria-current="page">
+                                <svg class="icon"><use href="#i-book-open" /></svg> Publicación en catálogo
+                            </a>
                         </li>
                         <li>
-                            <a href="panel_control.php"
-                                ><svg class="icon"><use href="#i-layout-dashboard" /></svg> Panel de control</a
-                            >
+                            <a href="panel_control.php">
+                                <svg class="icon"><use href="#i-layout-dashboard" /></svg> Panel de control
+                            </a>
                         </li>
                         <li>
-                            <a href="datos_biblioteca.php"
-                                ><svg class="icon"><use href="#i-building" /></svg> Datos de la biblioteca
-                                <svg class="icon chevron"><use href="#i-chevron-right" /></svg
-                            ></a>
+                            <a href="datos_biblioteca.php">
+                                <svg class="icon"><use href="#i-building" /></svg> Datos de la biblioteca
+                                <svg class="icon chevron"><use href="#i-chevron-right" /></svg>
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -605,14 +477,14 @@
 
                 <ul class="sidebar-menu sidebar-bottom">
                     <li>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"
-                            ><svg class="icon"><use href="#i-lock" /></svg> Cambiar contraseña</a
-                        >
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <svg class="icon"><use href="#i-lock" /></svg> Cambiar contraseña
+                        </a>
                     </li>
                     <li>
-                        <a href="index.php"
-                            ><svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión</a
-                        >
+                        <a href="index.php">
+                            <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
+                        </a>
                     </li>
                 </ul>
             </aside>
@@ -659,54 +531,54 @@
                                             <td>[Título del libro]<span class="sub">[Autor]</span></td>
                                             <td>[Área]</td>
                                             <td class="text-end">
-                                                <span class="tag tag-ok"
-                                                    ><svg class="icon"><use href="#i-circle-check" /></svg> Publicado</span
-                                                >
+                                                <span class="tag tag-ok">
+                                                    <svg class="icon"><use href="#i-circle-check" /></svg> Publicado
+                                                </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>[Título del libro]<span class="sub">[Autor]</span></td>
                                             <td>[Área]</td>
                                             <td class="text-end">
-                                                <span class="tag tag-off"
-                                                    ><svg class="icon"><use href="#i-circle-x" /></svg> No publicado</span
-                                                >
+                                                <span class="tag tag-off">
+                                                    <svg class="icon"><use href="#i-circle-x" /></svg> No publicado
+                                                </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>[Título del libro]<span class="sub">[Autor]</span></td>
                                             <td>[Área]</td>
                                             <td class="text-end">
-                                                <span class="tag tag-ok"
-                                                    ><svg class="icon"><use href="#i-circle-check" /></svg> Publicado</span
-                                                >
+                                                <span class="tag tag-ok">
+                                                    <svg class="icon"><use href="#i-circle-check" /></svg> Publicado
+                                                </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>[Título del libro]<span class="sub">[Autor]</span></td>
                                             <td>[Área]</td>
                                             <td class="text-end">
-                                                <span class="tag tag-off"
-                                                    ><svg class="icon"><use href="#i-circle-x" /></svg> No publicado</span
-                                                >
+                                                <span class="tag tag-off">
+                                                    <svg class="icon"><use href="#i-circle-x" /></svg> No publicado
+                                                </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>[Título del libro]<span class="sub">[Autor]</span></td>
                                             <td>[Área]</td>
                                             <td class="text-end">
-                                                <span class="tag tag-off"
-                                                    ><svg class="icon"><use href="#i-circle-x" /></svg> No publicado</span
-                                                >
+                                                <span class="tag tag-off">
+                                                    <svg class="icon"><use href="#i-circle-x" /></svg> No publicado
+                                                </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>[Título del libro]<span class="sub">[Autor]</span></td>
                                             <td>[Área]</td>
                                             <td class="text-end">
-                                                <span class="tag tag-ok"
-                                                    ><svg class="icon"><use href="#i-circle-check" /></svg> Publicado</span
-                                                >
+                                                <span class="tag tag-ok">
+                                                    <svg class="icon"><use href="#i-circle-check" /></svg> Publicado
+                                                </span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -718,9 +590,9 @@
                             <section class="panel overflow-hidden">
                                 <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
                                     <h2 class="h5 fw-semibold mb-0" style="color: var(--green-main)">Datos del libro</h2>
-                                    <span class="tag tag-ok"
-                                        ><svg class="icon"><use href="#i-circle-check" /></svg> Publicado</span
-                                    >
+                                    <span class="tag tag-ok">
+                                        <svg class="icon"><use href="#i-circle-check" /></svg> Publicado
+                                    </span>
                                 </div>
                                 <form action="" method="post" class="p-4" enctype="multipart/form-data">
                                     <p
@@ -746,8 +618,8 @@
                                             [Título del libro]
                                         </div>
                                         <div class="flex-grow-1">
-                                            <label class="btn btn-outline-brand w-100 mb-2"
-                                                ><svg class="icon"><use href="#i-upload" /></svg> Subir portada
+                                            <label class="btn btn-outline-brand w-100 mb-2">
+                                                <svg class="icon"><use href="#i-upload" /></svg> Subir portada
                                                 <input type="file" name="portada" accept="image/png,image/jpeg" class="d-none" />
                                             </label>
                                             <p class="small text-secondary mb-0">
@@ -791,83 +663,14 @@
             </main>
         </div>
 
-        <!-- Ventana: Cambiar contraseña (se abre desde "Cambiar contraseña") -->
-        <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-            <symbol id="pw-lock" viewBox="0 0 24 24">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </symbol>
-            <symbol id="pw-eye" viewBox="0 0 24 24">
-                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
-                <circle cx="12" cy="12" r="3" />
-            </symbol>
-            <symbol id="pw-eye-off" viewBox="0 0 24 24">
-                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
-                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
-                <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
-                <path d="m2 2 20 20" />
-            </symbol>
-        </svg>
-        <style>
-            .pw-icon {
-                width: 20px;
-                height: 20px;
-                fill: none;
-                stroke: currentColor;
-                stroke-width: 1.75;
-                stroke-linecap: round;
-                stroke-linejoin: round;
-            }
-            .pw-circle {
-                width: 52px;
-                height: 52px;
-                border-radius: 50%;
-                background-color: #e6f4ec;
-                color: #0f5132;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-            .pw-group {
-                position: relative;
-            }
-            .pw-group .pw-left {
-                position: absolute;
-                left: 14px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #4b5563;
-            }
-            .pw-group .form-control {
-                height: 48px;
-                padding-left: 44px;
-                padding-right: 46px;
-                border-color: #d0d5dd;
-                border-radius: 8px;
-            }
-            .pw-group .form-control:focus {
-                border-color: #2e7d58;
-                box-shadow: 0 0 0 3px rgba(46, 125, 88, 0.2);
-            }
-            .pw-group .pw-toggle {
-                position: absolute;
-                right: 6px;
-                top: 50%;
-                transform: translateY(-50%);
-                border: 0;
-                background: transparent;
-                color: #4b5563;
-                padding: 8px;
-            }
-        </style>
+        <!-- Modal: Cambiar contraseña -->
         <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" style="max-width: 480px">
                 <div class="modal-content border-0 rounded-4">
                     <form action="" method="post" class="modal-body p-4">
                         <div class="d-flex align-items-start gap-3 mb-4">
                             <div class="pw-circle">
-                                <svg class="pw-icon"><use href="#pw-lock" /></svg>
+                                <svg class="pw-icon"><use href="#i-lock" /></svg>
                             </div>
                             <div class="flex-grow-1">
                                 <h2 id="changePasswordTitle" class="h4 fw-semibold mb-1" style="color: #0f5132">Cambiar contraseña</h2>
@@ -879,7 +682,7 @@
                         <div class="mb-3">
                             <label for="pwActual" class="form-label fw-medium">Contraseña actual</label>
                             <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#pw-lock" /></svg>
+                                <svg class="pw-icon pw-left"><use href="#i-lock" /></svg>
                                 <input
                                     type="password"
                                     id="pwActual"
@@ -897,7 +700,7 @@
                         <div class="mb-3">
                             <label for="pwNueva" class="form-label fw-medium">Contraseña nueva</label>
                             <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#pw-lock" /></svg>
+                                <svg class="pw-icon pw-left"><use href="#i-lock" /></svg>
                                 <input
                                     type="password"
                                     id="pwNueva"
@@ -917,7 +720,7 @@
                         <div class="mb-4">
                             <label for="pwConfirmar" class="form-label fw-medium">Confirmar contraseña nueva</label>
                             <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#pw-lock" /></svg>
+                                <svg class="pw-icon pw-left"><use href="#i-lock" /></svg>
                                 <input
                                     type="password"
                                     id="pwConfirmar"
@@ -941,8 +744,9 @@
                 </div>
             </div>
         </div>
+
         <script>
-            // mostrar u ocultar la contraseña
+            // Mostrar u ocultar la contraseña
             document.querySelectorAll(".pw-toggle").forEach(function (b) {
                 b.addEventListener("click", function () {
                     var campo = document.getElementById(b.dataset.target);

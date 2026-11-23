@@ -3,10 +3,9 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
         <title>Detalle del libro - Biblioteca Escolar</title>
 
-        <!-- Fuente Poppins (guia de estilos) -->
+        <!-- Fuente Poppins (guía de estilos) -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -14,7 +13,6 @@
         <link rel="stylesheet" href="./css/bootstrap.min.css" />
 
         <style>
-            /* Colores de la guia de estilos */
             :root {
                 --green-main: #0f5132;
                 --green-medium: #2e7d58;
@@ -27,12 +25,11 @@
                 --text-main: #212121;
                 --text-muted: #4b5563;
                 --border-card: #e5e7eb;
-                --border-field: #d0d5dd;
             }
 
             body {
                 font-family: "Poppins", "Segoe UI", Arial, sans-serif;
-                font-size: 15px;
+                font-size: 14px;
                 line-height: 1.5;
                 color: var(--text-main);
                 background-color: var(--gray-light);
@@ -41,6 +38,14 @@
             h1,
             h2 {
                 font-weight: 600;
+            }
+
+            .container {
+                max-width: 1220px;
+            }
+
+            .fs-5 {
+                font-size: 0.95rem !important;
             }
 
             .icon {
@@ -54,56 +59,20 @@
                 flex-shrink: 0;
             }
 
-            /* ancho maximo del contenido para que no se estire en pantallas grandes */
-            .container {
-                max-width: 1140px;
-            }
-
             /* ---------- Botones ---------- */
-            .btn-primary-brand,
-            .btn-secondary-brand,
+            .btn {
+                font-size: 14px;
+            }
             .btn-header {
-                font-size: 15px;
+                font-size: 14px;
                 font-weight: 500;
                 border-radius: 8px;
-                min-height: 46px;
-                padding: 8px 22px;
+                min-height: 40px;
+                padding: 6px 16px;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
-            }
-
-            .btn-primary-brand {
-                background-color: var(--green-main);
-                color: #ffffff;
-                border: 1.5px solid var(--green-main);
-            }
-            .btn-primary-brand:hover {
-                background-color: var(--green-medium);
-                border-color: var(--green-medium);
-                color: #ffffff;
-            }
-            .btn-primary-brand:active {
-                background-color: var(--green-dark) !important;
-                color: #ffffff;
-            }
-
-            .btn-secondary-brand {
-                background-color: #ffffff;
-                color: var(--green-main);
-                border: 1.5px solid var(--green-main);
-            }
-            .btn-secondary-brand:hover {
-                background-color: var(--green-soft);
-                color: var(--green-main);
-                border-color: var(--green-main);
-            }
-
-            .btn-header {
-                min-height: 40px;
-                padding: 6px 16px;
-                font-size: 14px;
                 background-color: transparent;
                 color: #ffffff;
                 border: 1.5px solid #ffffff;
@@ -112,9 +81,6 @@
                 background-color: rgba(255, 255, 255, 0.12);
                 color: #ffffff;
             }
-
-            .btn-primary-brand:focus-visible,
-            .btn-secondary-brand:focus-visible,
             .btn-header:focus-visible,
             .nav-link:focus-visible {
                 outline: 3px solid var(--blue-accent);
@@ -124,77 +90,79 @@
             /* ---------- Encabezado ---------- */
             .site-header {
                 background-color: var(--green-main);
-                min-height: 60px;
+                min-height: 74px;
             }
-            .brand-logo {
-                height: 40px;
+            .site-header .navbar {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+            }
+            .site-header .brand-logo {
+                height: 50px;
                 width: auto;
             }
-            .brand-name {
+            .site-header .brand-name {
                 font-weight: 600;
-                font-size: 18px;
+                font-size: 16px;
                 line-height: 1.2;
                 color: #ffffff;
             }
-            .brand-sub {
-                font-size: 12px;
+            .site-header .brand-sub {
+                font-size: 10px;
                 line-height: 1.2;
                 color: #ffffff;
             }
-
             .site-header .nav-link {
                 color: #ffffff;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 500;
-                padding: 8px 12px;
+                padding: 8px 14px;
+            }
+            .site-header .nav-link.active,
+            .site-header .nav-link:hover,
+            .site-header .nav-link:focus {
+                color: #ffffff;
+                font-weight: 600;
+                background: transparent;
+            }
+            .site-header .btn-brand-outline {
+                font-weight: 500;
                 border-radius: 8px;
-            }
-            .site-header .nav-link:hover {
-                background-color: rgba(255, 255, 255, 0.12);
-            }
-            .site-header .navbar-nav .nav-link,
-            .site-header .navbar-nav .nav-link.active {
-                color: #ffffff;
-            }
-            .site-header .navbar-nav .nav-link.active {
-                border-bottom: 3px solid #ffffff;
-                border-radius: 8px 8px 0 0;
-            }
-
-            .user-box {
-                display: flex;
-                align-items: center;
-                gap: 16px;
-                color: #ffffff;
-                font-size: 14px;
-            }
-            .user-box .user-name {
-                display: flex;
+                padding: 4px 12px;
+                min-height: 34px;
+                font-size: 13px;
+                display: inline-flex;
                 align-items: center;
                 gap: 8px;
-            }
-
-            .bell-link {
-                position: relative;
+                background: transparent;
                 color: #ffffff;
-                display: flex;
+                border: 1.5px solid #ffffff;
+            }
+            .site-header .btn-brand-outline:hover {
+                background-color: rgba(255, 255, 255, 0.12);
+                color: #ffffff;
             }
             .bell-badge {
-                position: absolute;
-                top: -8px;
-                right: -8px;
                 min-width: 18px;
                 height: 18px;
-                border-radius: 999px;
-                background-color: var(--red-alert);
-                color: #ffffff;
                 font-size: 11px;
                 font-weight: 600;
+                background-color: var(--red-alert) !important;
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
-
+            @media (min-width: 992px) {
+                .site-header .nav-link {
+                    height: 74px;
+                    display: flex;
+                    align-items: center;
+                    border-bottom: 3px solid transparent;
+                    border-radius: 0;
+                }
+                .site-header .nav-link.active {
+                    border-bottom-color: #ffffff;
+                }
+            }
             @media (max-width: 991.98px) {
                 .site-header .navbar-collapse {
                     padding-bottom: 12px;
@@ -367,7 +335,7 @@
                 margin-top: 2px;
             }
 
-            /* ---------- Pie de pagina ---------- */
+            /* ---------- Pie de página ---------- */
             .site-footer {
                 background-color: var(--green-dark);
                 color: #ffffff;
@@ -376,235 +344,15 @@
                 padding: 16px 0;
             }
         </style>
-
-        <style>
-            /* encabezado del lector (igual que Inicio, Mi cuenta y Ayuda) */
-            .site-header {
-                background-color: var(--green-main);
-                min-height: 82px;
-            }
-            .site-header .brand-logo {
-                height: 50px;
-                width: auto;
-            }
-            .site-header .nav-link {
-                color: #fff;
-                font-size: 15px;
-                font-weight: 500;
-                padding: 8px 14px;
-            }
-            .site-header .nav-link.active,
-            .site-header .nav-link:hover,
-            .site-header .nav-link:focus {
-                color: #fff;
-                font-weight: 600;
-                background: transparent;
-            }
-            .site-header .btn-brand-outline {
-                font-weight: 500;
-                border-radius: 8px;
-                padding: 8px 18px;
-                min-height: 42px;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                background: transparent;
-                color: #fff;
-                border: 1.5px solid #fff;
-            }
-            .site-header .btn-brand-outline:hover {
-                background-color: rgba(255, 255, 255, 0.12);
-                color: #fff;
-            }
-            @media (min-width: 992px) {
-                .site-header .navbar {
-                    padding: 0;
-                }
-                .site-header .nav-link {
-                    height: 82px;
-                    display: flex;
-                    align-items: center;
-                    border-bottom: 3px solid transparent;
-                    border-radius: 0;
-                }
-                .site-header .nav-link.active {
-                    border-bottom-color: #fff;
-                }
-            }
-        </style>
-        <style>
-            body {
-                font-size: 14px;
-            }
-            .container {
-                max-width: 1080px;
-            }
-            .site-header {
-                min-height: 70px;
-            }
-            .site-header .brand-logo {
-                height: 42px;
-            }
-            .site-header .brand-name {
-                font-size: 16px;
-            }
-            .site-header .brand-sub {
-                font-size: 11px;
-            }
-            .site-header .nav-link {
-                font-size: 14px;
-            }
-            .site-header .btn-brand-outline {
-                min-height: 38px;
-                padding: 6px 14px;
-                font-size: 14px;
-            }
-            @media (min-width: 992px) {
-                .site-header .nav-link {
-                    height: 70px;
-                }
-            }
-            .display-5 {
-                font-size: 2rem;
-            }
-            .display-6 {
-                font-size: 1.75rem;
-            }
-            .fs-2 {
-                font-size: 1.6rem !important;
-            }
-            .fs-4 {
-                font-size: 1.1rem !important;
-            }
-            .fs-5 {
-                font-size: 0.95rem !important;
-            }
-            .panel-head {
-                padding: 16px 20px;
-            }
-            .panel-head h2 {
-                font-size: 20px;
-            }
-            .panel-head p {
-                font-size: 13px;
-            }
-            .icon-circle {
-                width: 40px;
-                height: 40px;
-            }
-            .table-lib thead th,
-            .table-lib td {
-                padding: 10px 14px;
-                font-size: 14px;
-            }
-            .table-lib .sub {
-                font-size: 12px;
-            }
-            .tag {
-                font-size: 12px;
-            }
-            .summary-strip {
-                font-size: 14px;
-                margin-top: -26px;
-            }
-            .hero .container {
-                padding-top: 2rem !important;
-                padding-bottom: 2.5rem !important;
-            }
-            .h4 {
-                font-size: 1.1rem;
-            }
-            main > .container.py-5,
-            main.py-5 {
-                padding-top: 2rem !important;
-                padding-bottom: 2rem !important;
-            }
-            .btn {
-                font-size: 14px;
-            }
-            .h3 {
-                font-size: 1.4rem;
-            }
-        </style>
-        <style data-ajuste="2">
-            .container {
-                max-width: 1220px;
-            }
-            .site-header {
-                min-height: 74px;
-            }
-            .site-header .navbar {
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
-            }
-            .site-header .brand-logo {
-                height: 50px;
-            }
-            .site-header .brand-name {
-                font-size: 16px;
-            }
-            .site-header .brand-sub {
-                font-size: 10px;
-            }
-            .site-header .nav-link {
-                font-size: 13px;
-            }
-            .site-header .btn-brand-outline {
-                min-height: 34px;
-                padding: 4px 12px;
-                font-size: 13px;
-            }
-            @media (min-width: 992px) {
-                .site-header .nav-link {
-                    height: 74px;
-                }
-            }
-            .display-5 {
-                font-size: 1.8rem;
-            }
-            .h3 {
-                font-size: 1.25rem;
-            }
-            .panel-head {
-                padding: 14px 18px;
-            }
-            .panel-head h2 {
-                font-size: 18px;
-            }
-            .icon-circle {
-                width: 36px;
-                height: 36px;
-            }
-            .table-lib thead th,
-            .table-lib td {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-            main > .container.py-5,
-            main.py-5 {
-                padding-top: 1.75rem !important;
-                padding-bottom: 1.75rem !important;
-            }
-        </style>
     </head>
 
     <body class="d-flex flex-column min-vh-100">
-        <!-- Iconos (set Lucide, trazo lineal) -->
+        <!-- Iconos SVG usados en esta página -->
         <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-            <symbol id="i-lock" viewBox="0 0 24 24">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </symbol>
-            <symbol id="i-info" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16v-4" />
-                <path d="M12 8h.01" />
-            </symbol>
             <symbol id="i-clock" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />
             </symbol>
-            <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></symbol>
             <symbol id="i-circle-check" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />
                 <path d="m9 12 2 2 4-4" />
@@ -616,9 +364,7 @@
             </symbol>
             <symbol id="i-bell" viewBox="0 0 24 24">
                 <path d="M10.268 21a2 2 0 0 0 3.464 0" />
-                <path
-                    d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
-                />
+                <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
             </symbol>
             <symbol id="i-user" viewBox="0 0 24 24">
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
@@ -629,18 +375,9 @@
                 <path d="M21 12H9" />
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             </symbol>
-            <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></symbol>
-            <symbol id="i-search" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-            </symbol>
             <symbol id="i-arrow-left" viewBox="0 0 24 24">
                 <path d="m12 19-7-7 7-7" />
                 <path d="M19 12H5" />
-            </symbol>
-            <symbol id="i-arrow-right" viewBox="0 0 24 24">
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
             </symbol>
             <symbol id="i-library" viewBox="0 0 24 24">
                 <path d="m16 6 4 14" />
@@ -660,7 +397,7 @@
         </svg>
 
         <header class="site-header d-flex align-items-center">
-            <nav class="navbar navbar-expand-lg py-2 w-100">
+            <nav class="navbar navbar-expand-lg w-100">
                 <div class="container">
                     <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="inicio_lector.php">
                         <img src="./img/logo-cbta5-blanco.png" alt="Logotipo del CBTa No. 5" class="brand-logo" />
@@ -693,16 +430,14 @@
                         <div class="d-flex align-items-center gap-3 text-white">
                             <a href="mi_cuenta.php" class="position-relative text-white" aria-label="2 avisos nuevos">
                                 <svg class="icon" style="width: 24px; height: 24px"><use href="#i-bell" /></svg>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bell-badge"
-                                    >2</span
-                                >
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bell-badge">2</span>
                             </a>
-                            <span class="d-flex align-items-center gap-2"
-                                ><svg class="icon"><use href="#i-user" /></svg> [Nombre del lector]</span
-                            >
-                            <a href="index.php" class="btn btn-brand-outline"
-                                ><svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión</a
-                            >
+                            <span class="d-flex align-items-center gap-2">
+                                <svg class="icon"><use href="#i-user" /></svg> [Nombre del lector]
+                            </span>
+                            <a href="index.php" class="btn btn-brand-outline">
+                                <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -817,10 +552,7 @@
                                     </li>
                                     <li>
                                         <svg class="icon"><use href="#i-clock" /></svg>
-                                        <span
-                                            >Tienes un plazo para recoger el libro en la biblioteca. Si no lo recoges a tiempo, la reserva
-                                            expira.</span
-                                        >
+                                        <span>Tienes un plazo para recoger el libro en la biblioteca. Si no lo recoges a tiempo, la reserva expira.</span>
                                     </li>
                                     <li>
                                         <svg class="icon"><use href="#i-library" /></svg>
@@ -838,7 +570,6 @@
             </section>
         </main>
 
-        <!-- Pie de pagina -->
         <footer class="site-footer">© 2026 CBTa No. 5 · Biblioteca Escolar</footer>
 
         <script src="./js/bootstrap.bundle.min.js"></script>
