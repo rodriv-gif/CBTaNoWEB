@@ -343,6 +343,19 @@
                 font-size: 14px;
                 padding: 16px 0;
             }
+            .tag {
+                display: inline-flex;
+                align-items: center;
+                padding: 2px 12px;
+                border-radius: 999px;
+                font-size: 12px;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+            .tag-ok {
+                color: var(--green-success);
+                background-color: var(--green-soft);
+            }
         </style>
     </head>
 
@@ -399,7 +412,7 @@
         <header class="site-header d-flex align-items-center">
             <nav class="navbar navbar-expand-lg w-100">
                 <div class="container">
-                    <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="inicio_lector.php">
+                    <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="mi_cuenta.php">
                         <img src="./img/logo-cbta5-blanco.png" alt="Logotipo del CBTa No. 5" class="brand-logo" />
                         <span>
                             <span class="brand-name d-block">Biblioteca Escolar</span>
@@ -421,9 +434,8 @@
 
                     <div class="collapse navbar-collapse" id="mainMenu">
                         <ul class="navbar-nav mx-lg-auto mb-3 mb-lg-0 gap-lg-2">
-                            <li class="nav-item"><a class="nav-link" href="inicio_lector.php">Inicio</a></li>
-                            <li class="nav-item"><a class="nav-link active" href="catalogo.php" aria-current="page">Catálogo</a></li>
                             <li class="nav-item"><a class="nav-link" href="mi_cuenta.php">Mi cuenta</a></li>
+                            <li class="nav-item"><a class="nav-link active" href="catalogo.php" aria-current="page">Catálogo</a></li>
                             <li class="nav-item"><a class="nav-link" href="ayuda.php">Ayuda</a></li>
                         </ul>
 
@@ -435,6 +447,7 @@
                             <span class="d-flex align-items-center gap-2">
                                 <svg class="icon"><use href="#i-user" /></svg> [Nombre del lector]
                             </span>
+                            <span class="tag tag-ok">Alumno</span>
                             <a href="index.php" class="btn btn-brand-outline">
                                 <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
                             </a>

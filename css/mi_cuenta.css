@@ -1,0 +1,94 @@
+/* Mi cuenta: tablero del lector */
+
+/* Franja verde con el saludo y el estante de libros */
+.hero {
+    position: relative;
+    background-color: var(--green-dark);
+    padding: 2rem 0 5.5rem;
+}
+.hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 58px;
+    background: url("../img/estante.svg") center / 100% 100% no-repeat;
+}
+.hero-eyebrow {
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.hero-cards {
+    position: relative;
+    z-index: 1;
+    margin-top: -3rem;
+    padding-bottom: 3rem;
+}
+
+/* Tarjetas de resumen */
+.stat-number {
+    font-size: 2.2rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--green-main);
+}
+.stat-card.is-danger .stat-number {
+    color: var(--red-alert);
+}
+.stat-card.is-danger .icon-circle {
+    background-color: var(--red-soft);
+    color: var(--red-alert);
+}
+
+/* Ventana: cambiar contraseña */
+#changePasswordModal .modal-dialog {
+    max-width: 480px;
+}
+.modal-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: var(--green-soft);
+    color: var(--green-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.password-field {
+    position: relative;
+}
+.password-field .field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+.password-field .form-control {
+    height: 48px;
+    padding: 0 46px 0 44px;
+    border-color: var(--border-field);
+    border-radius: 8px;
+}
+.password-field .form-control:focus {
+    border-color: var(--green-medium);
+    box-shadow: 0 0 0 3px rgba(46, 125, 88, 0.2);
+}
+.password-field .toggle-password {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+    padding: 8px;
+}
+#changePasswordTitle {
+    color: var(--green-main);
+}

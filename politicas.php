@@ -322,12 +322,61 @@
                     position: static;
                 }
             }
+            /* pie de pagina */
             .site-footer {
                 background-color: var(--green-dark);
                 color: #ffffff;
-                text-align: center;
+                padding: 40px 0 0 0;
+            }
+            .footer-logo {
+                height: 62px;
+                width: auto;
+            }
+            .site-footer h3 {
+                font-size: 16px;
+                margin-bottom: 14px;
+            }
+            .site-footer .footer-brand {
+                font-size: 18px;
+                font-weight: 600;
+            }
+            .site-footer p,
+            .site-footer li,
+            .site-footer a {
                 font-size: 14px;
+                color: #ffffff;
+            }
+            .site-footer a {
+                text-decoration: none;
+            }
+            .site-footer a:hover {
+                text-decoration: underline;
+            }
+            .contact-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+            .contact-list li {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+            .footer-links {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+            .footer-links li {
+                margin-bottom: 10px;
+            }
+            .footer-bottom {
+                margin-top: 24px;
                 padding: 16px 0;
+                border-top: 1px solid rgba(255, 255, 255, 0.15);
+                text-align: center;
+                font-size: 13px;
             }
         </style>
         <style data-ajuste="2">
@@ -656,7 +705,51 @@
         </main>
 
         <!-- Pie de pagina -->
-        <footer class="site-footer">© 2026 CBTa No. 5 · Biblioteca Escolar</footer>
+        <footer class="site-footer">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="./img/logo-cbta5-blanco.png" alt="Logotipo del CBTa No. 5" class="footer-logo" />
+                            <div>
+                                <p class="footer-brand mb-0">Biblioteca Escolar</p>
+                                <p class="mb-1">CBTa No. 5 · Huejutla, Hgo.</p>
+                                <p class="mb-0">Más que libros, conectamos ideas</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-7 col-lg-4">
+                        <h3>Contacto</h3>
+                        <ul class="contact-list">
+                            <li>
+                                <svg class="icon"><use href="#i-map-pin" /></svg>
+                                <span>CBTa No. 5, Huejutla de Reyes, Hgo.</span>
+                            </li>
+                            <li>
+                                <svg class="icon"><use href="#i-mail" /></svg>
+                                <span>[correo de la biblioteca]</span>
+                            </li>
+                            <li>
+                                <svg class="icon"><use href="#i-phone" /></svg>
+                                <span>[teléfono de la biblioteca]</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-5 col-lg-3">
+                        <h3>Información</h3>
+                        <ul class="footer-links">
+                            <li><a href="nosotros.php">Nosotros</a></li>
+                            <li><a href="preguntas.php">Preguntas frecuentes</a></li>
+                            <li><a href="politicas.php">Políticas y condiciones del servicio bibliotecario</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">© 2026 CBTa No. 5 · Biblioteca Escolar</div>
+            </div>
+        </footer>
 
         <script src="./js/bootstrap.bundle.min.js"></script>
     </body>

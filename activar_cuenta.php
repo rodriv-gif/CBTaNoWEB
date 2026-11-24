@@ -1,3 +1,23 @@
+<?php
+date_default_timezone_set("America/Mexico_City");
+require "config/db.php";
+
+// Se busca el código del enlace: debe existir, no estar usado y no haber vencido
+$activada = false;
+$token = $_GET["token"] ?? "";
+
+if ($token !== "") {
+    $consulta = $pdo->prepare("SELECT id_cuenta FROM tblcuentas_lector WHERE token_activacion = ? AND activa = 0 AND vence_activacion >= ?");
+    $consulta->execute([$token, date("Y-m-d H:i:s")]);
+    $cuenta = $consulta->fetch();
+
+    if ($cuenta) {
+        $consulta = $pdo->prepare("UPDATE tblcuentas_lector SET activa = 1, token_activacion = NULL, vence_activacion = NULL WHERE id_cuenta = ?");
+        $consulta->execute([$cuenta["id_cuenta"]]);
+        $activada = true;
+    }
+}
+?>
 <!doctype html>
 <html lang="es">
     <head>
@@ -757,16 +777,34 @@
                 <!-- Panel derecho: formulario -->
                 <section class="col-lg-5 login-panel">
                     <div class="login-card">
-                        <div class="state-icon state-ok">
-                            <svg class="icon"><use href="#i-circle-check" /></svg>
-                        </div>
+                        <?php if ($activada): ?>
+                            <div class="state-icon state-ok">
+                                <svg class="icon"><use href="#i-circle-check" /></svg>
+                            </div>
 
-                        <h2 class="login-title">Cuenta activada</h2>
-                        <p class="login-subtitle">
-                            Tu cuenta quedó activa. Ya puedes iniciar sesión con tu matrícula o clave y tu contraseña.
-                        </p>
+                            <h2 class="login-title">Cuenta activada</h2>
+                            <p class="login-subtitle">
+                                Tu cuenta quedó activa. Ya puedes iniciar sesión con tu matrícula o clave y tu contraseña.
+                            </p>
 
-                        <a href="login.php" class="btn btn-login d-flex align-items-center justify-content-center">Iniciar sesión</a>
+                            <a href="login.php" class="btn btn-login d-flex align-items-center justify-content-center">Iniciar sesión</a>
+                        <?php else: ?>
+                            <div class="state-icon state-error">
+                                <svg class="icon"><use href="#i-triangle-alert" /></svg>
+                            </div>
+
+                            <h2 class="login-title">Enlace no válido</h2>
+                            <p class="login-subtitle">
+                                Este enlace ya se usó o venció (dura 24 horas). Si ya activaste tu cuenta, inicia sesión. Si no, crea tu cuenta de nuevo para recibir otro enlace.
+                            </p>
+
+                            <a href="login.php" class="btn btn-login d-flex align-items-center justify-content-center">Iniciar sesión</a>
+
+                            <p class="login-footer-text">
+                                ¿No activaste tu cuenta?
+                                <a href="registro.php">Crear cuenta</a>
+                            </p>
+                        <?php endif; ?>
                     </div>
                 </section>
             </div>
