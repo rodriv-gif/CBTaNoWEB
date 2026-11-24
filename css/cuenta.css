@@ -1,0 +1,89 @@
+/* Paginas de Mi cuenta: prestamos, reservas, adeudos y avisos */
+.page-title {
+    color: var(--green-main);
+}
+.icon-circle-lg {
+    width: 52px;
+    height: 52px;
+}
+
+/* Tablas */
+.table thead {
+    --bs-table-bg: var(--gray-light);
+}
+.table th,
+.table td {
+    padding: 1rem 1.5rem;
+}
+.table th {
+    font-size: 13.5px;
+    font-weight: 600;
+}
+.row-late {
+    --bs-table-bg: #fef3f2;
+}
+.row-late td:first-child {
+    box-shadow: inset 4px 0 0 var(--red-alert);
+}
+
+/* Estados */
+.tag-danger {
+    color: var(--red-alert);
+    background-color: var(--red-soft);
+}
+.tag-info {
+    color: var(--blue-accent);
+    background-color: #e0e7ff;
+}
+.tag-new {
+    color: #ffffff;
+    background-color: var(--green-main);
+}
+.text-amber {
+    color: #b54708 !important;
+}
+
+/* Botones de la tabla de reservas */
+.btn-outline-green,
+.btn-outline-red {
+    background-color: #ffffff;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-outline-green {
+    color: var(--green-main);
+    border: 1.5px solid var(--green-main);
+}
+.btn-outline-green:hover {
+    color: var(--green-main);
+    background-color: var(--green-soft);
+}
+.btn-outline-red {
+    color: var(--red-alert);
+    border: 1.5px solid var(--red-alert);
+}
+.btn-outline-red:hover {
+    color: var(--red-alert);
+    background-color: var(--red-soft);
+}
+
+/* Adeudos */
+.debt-total {
+    background-color: #fef3f2;
+    border-top: 1px solid #fda29b;
+}
+
+/* Avisos */
+.notice + .notice {
+    border-top: 1px solid var(--border-card);
+}
+.notice-new {
+    background-color: #edf6f1;
+    box-shadow: inset 4px 0 0 var(--green-main);
+}
+.notice-icon {
+    background-color: #ffffff;
+    border: 1px solid var(--border-card);
+}
