@@ -106,6 +106,7 @@ if ($stmtLibros) {
         <link rel="stylesheet" href="./css/estilos.css" />
         <link rel="stylesheet" href="./css/lector.css" />
         <link rel="stylesheet" href="./css/catalogo.css" />
+        <link rel="stylesheet" href="./css/footer.css" />
     </head>
 
     <body class="d-flex flex-column min-vh-100">
@@ -243,5 +244,6 @@ if ($stmtLibros) {
         }
         include "includes/footer.php";
         ?>
+        <script src="./js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

@@ -15,6 +15,7 @@
         <link rel="stylesheet" href="./css/estilos.css" />
         <link rel="stylesheet" href="./css/lector.css" />
         <link rel="stylesheet" href="./css/cuenta.css" />
+        <link rel="stylesheet" href="./css/footer.css" />
     </head>
 
     <body class="d-flex flex-column min-vh-100">

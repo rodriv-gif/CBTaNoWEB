@@ -371,14 +371,6 @@
             }
 
             /* pie de pagina */
-            .site-footer {
-                background-color: var(--green-dark);
-                color: #ffffff;
-                text-align: center;
-                font-size: 14px;
-                padding: 16px 0;
-            }
-
             /* ---------- Pantallas de cuenta (registro y recuperar contraseña) ---------- */
             .back-link {
                 display: inline-flex;
@@ -574,12 +566,6 @@
             .cta-band {
                 padding: 32px 0;
             }
-            .site-footer {
-                padding: 32px 0 0 0;
-            }
-            .footer-logo {
-                height: 50px;
-            }
             .login-info {
                 padding: 64px 0;
             }
@@ -593,6 +579,7 @@
                 font-size: 15px;
             }
         </style>
+        <link rel="stylesheet" href="./css/footer.css" />
     </head>
 
     <body class="d-flex flex-column min-vh-100">
@@ -784,7 +771,7 @@
         </main>
 
         <!-- Pie de pagina -->
-        <footer class="site-footer">© 2026 CBTa No. 5 · Biblioteca Escolar</footer>
+        <?php include "includes/footer.php"; ?>
 
         <script src="./js/bootstrap.bundle.min.js"></script>
         <script>
