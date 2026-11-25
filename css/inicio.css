@@ -368,62 +368,6 @@ h5 {
 }
 
 /* pie de pagina */
-.site-footer {
-    background-color: var(--green-dark);
-    color: #ffffff;
-    padding: 40px 0 0 0;
-}
-.footer-logo {
-    height: 62px;
-    width: auto;
-}
-.site-footer h3 {
-    font-size: 16px;
-    margin-bottom: 14px;
-}
-.site-footer .footer-brand {
-    font-size: 18px;
-    font-weight: 600;
-}
-.site-footer p,
-.site-footer li,
-.site-footer a {
-    font-size: 14px;
-    color: #ffffff;
-}
-.site-footer a {
-    text-decoration: none;
-}
-.site-footer a:hover {
-    text-decoration: underline;
-}
-.contact-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-.contact-list li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-.footer-links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-.footer-links li {
-    margin-bottom: 10px;
-}
-.footer-bottom {
-    margin-top: 24px;
-    padding: 16px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    text-align: center;
-    font-size: 13px;
-}
-
 @media (max-width: 991.98px) {
     .hero {
         padding: 40px 0 110px 0;
@@ -502,12 +446,6 @@ h5 {
 }
 .cta-band {
     padding: 32px 0;
-}
-.site-footer {
-    padding: 32px 0 0 0;
-}
-.footer-logo {
-    height: 50px;
 }
 .login-info {
     padding: 64px 0;

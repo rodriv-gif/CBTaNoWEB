@@ -72,6 +72,7 @@ $tienePortada  = ($rutaFisica !== '' && file_exists($rutaFisica));
         <link rel="stylesheet" href="./css/estilos.css" />
         <link rel="stylesheet" href="./css/lector.css" />
         <link rel="stylesheet" href="./css/detalle_libro.css" />
+        <link rel="stylesheet" href="./css/footer.css" />   
     </head>
 
     <body class="d-flex flex-column min-vh-100">
@@ -187,5 +188,6 @@ $tienePortada  = ($rutaFisica !== '' && file_exists($rutaFisica));
         </main>
 
         <?php include "includes/footer.php"; ?>
+        <script src="./js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

@@ -237,14 +237,6 @@ h1, h2 { font-weight: 600; }
 }
 
 /* pie de pagina */
-.site-footer {
-    background-color: var(--green-dark);
-    color: #FFFFFF;
-    text-align: center;
-    font-size: 14px;
-    padding: 16px 0;
-}
-
 @media (max-width: 575.98px) {
     .login-card { padding: 24px 20px; }
     .login-info { padding: 32px 0 100px 0; }

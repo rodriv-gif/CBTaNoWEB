@@ -98,6 +98,7 @@ $texto_info = "Crea tu cuenta con tu matrícula o clave para consultar el catál
         <link rel="stylesheet" href="./css/bootstrap.min.css" />
         <link rel="stylesheet" href="./css/estilos.css" />
         <link rel="stylesheet" href="./css/login.css" />
+        <link rel="stylesheet" href="./css/footer.css" />
     </head>
 
     <body class="d-flex flex-column min-vh-100">

@@ -148,10 +148,3 @@ h2 {
 }
 
 /* ---------- Pie de pagina ---------- */
-.site-footer {
-    background-color: var(--green-dark);
-    color: #ffffff;
-    text-align: center;
-    font-size: 14px;
-    padding: 20px 0;
-}
