@@ -4,6 +4,15 @@ $db = "u408544566_biblioCBTa5";
 $user = "u408544566_biblioteca5"; // Cambia esto si tu MySQL tiene otro usuario
 $pass = "Cbta1245";     // Cambia esto si tu MySQL tiene contrasenia
 
+// Crea la conexión MySQLi procedimental y define las rutas donde se guardan las portadas
+$conexion = mysqli_connect($host, $user, $pass, $db);
+if (!$conexion) {
+    die("Error de conexión: " . mysqli_connect_error());
+}
+mysqli_set_charset($conexion, "utf8mb4");
+$dirPortadas = __DIR__ . '/../upload/libros/principales/';
+$urlPortadas = './upload/libros/principales/';
+
 try {
     // Nos conectamos definiendo el charset utf8mb4 para que no haya problemas con tildes o la 'ñ'
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
