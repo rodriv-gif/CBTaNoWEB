@@ -945,8 +945,8 @@
                 <div class="sidebar-main">
                     <ul class="sidebar-menu">
                         <li>
-                            <a href="gestion_reservas.php">
-                                <svg class="icon"><use href="#i-clipboard-list" /></svg> Gestión de reservas
+                            <a href="inventario_libros.php">
+                                <svg class="icon"><use href="#i-clipboard-list" /></svg> Inventario de libros
                             </a>
                         </li>
                         <li>

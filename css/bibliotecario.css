@@ -1,0 +1,375 @@
+/* Estilos del panel lateral y pantallas del bibliotecario */
+body {
+    font-size: 14px;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(to right, var(--green-main) 210px, transparent 210px);
+}
+
+.sidebar {
+    width: 210px;
+    flex-shrink: 0;
+    background-color: var(--green-main);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.sidebar-brand img {
+    height: 38px;
+    width: auto;
+}
+
+.sidebar-brand .brand-name {
+    font-size: 13px;
+}
+
+.sidebar-brand .brand-sub {
+    font-size: 10px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    color: #ffffff;
+    font-size: 13px;
+    text-decoration: none;
+    border-left: 4px solid transparent;
+}
+
+.sidebar-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu a.active {
+    background-color: var(--green-medium);
+    border-left-color: #ffffff;
+    font-weight: 500;
+}
+
+.sidebar-menu .chevron {
+    margin-left: auto;
+    width: 16px;
+    height: 16px;
+}
+
+.sidebar-main {
+    flex-grow: 1;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 12px 14px;
+    padding: 10px 12px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--green-soft);
+    color: var(--green-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.user-name {
+    font-size: 12px;
+    font-weight: 500;
+    display: block;
+}
+
+.user-role {
+    font-size: 11px;
+    display: block;
+}
+
+.sidebar-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 4px;
+    margin-bottom: 8px;
+}
+
+.admin-main {
+    flex-grow: 1;
+    min-width: 0;
+    padding: 28px 32px;
+}
+
+.admin-content {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--green-main);
+    margin: 0 0 4px 0;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    margin: 0 0 22px 0;
+}
+
+.panel {
+    background-color: #ffffff;
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.section-green-title {
+    color: var(--green-main);
+}
+
+.btn-brand,
+.btn-outline-brand,
+.btn-danger-soft {
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 6px 14px;
+    min-height: 38px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-brand {
+    background-color: var(--green-main);
+    color: #ffffff;
+    border: 1.5px solid var(--green-main);
+}
+
+.btn-brand:hover {
+    background-color: var(--green-medium);
+    border-color: var(--green-medium);
+    color: #ffffff;
+}
+
+.btn-outline-brand {
+    background-color: #ffffff;
+    color: var(--green-main);
+    border: 1.5px solid var(--green-main);
+}
+
+.btn-outline-brand:hover {
+    background-color: var(--green-soft);
+    color: var(--green-main);
+}
+
+.btn-danger-soft {
+    background-color: #ffffff;
+    color: var(--red-alert);
+    border: 1.5px solid var(--red-alert);
+}
+
+.btn-danger-soft:hover {
+    background-color: var(--red-soft);
+    color: var(--red-alert);
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.tag .icon {
+    width: 15px;
+    height: 15px;
+}
+
+.tag-ok {
+    color: var(--green-success);
+    background-color: var(--green-soft);
+}
+
+.tag-off {
+    color: #475467;
+    background-color: #f2f4f7;
+}
+
+.table-lib {
+    margin: 0;
+}
+
+.table-lib thead th {
+    background-color: var(--gray-light);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 12px 16px;
+    border-bottom: 0;
+}
+
+.table-lib td {
+    padding: 12px 16px;
+    font-size: 13.5px;
+    vertical-align: middle;
+    border-color: var(--border-card);
+}
+
+.table-lib .sub {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    display: block;
+}
+
+.thumb-cover {
+    width: 44px;
+    height: 62px;
+    border-radius: 6px;
+    object-fit: cover;
+    background-color: var(--green-main);
+    color: #ffffff;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4px;
+    flex-shrink: 0;
+}
+
+.cover-mini {
+    width: 96px;
+    height: 140px;
+    background-color: var(--green-main);
+    border-radius: 6px;
+    padding: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+@media (max-width: 991.98px) {
+    .admin-layout {
+        flex-direction: column;
+        background: none;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+    }
+    .admin-main {
+        padding: 24px 16px;
+    }
+    /* Paginación del panel bibliotecario */
+.pagination-admin .page-link {
+    color: var(--text-main);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    margin: 0 3px;
+    min-width: 38px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.pagination-admin .page-link:hover {
+    background-color: var(--gray-light);
+    text-decoration: none;
+}
+
+.pagination-admin .page-item.active .page-link {
+    background-color: var(--green-main);
+    border-color: var(--green-main);
+    color: #ffffff;
+}
+
+/* Modal Cambiar contraseña */
+#changePasswordModal .modal-dialog {
+    max-width: 480px;
+}
+
+.modal-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--green-soft);
+    color: var(--green-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field .field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.password-field .form-control {
+    height: 46px;
+    padding: 0 44px 0 42px;
+    border-color: var(--border-field);
+    border-radius: 8px;
+}
+
+.password-field .toggle-password {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+    padding: 8px;
+}
+}

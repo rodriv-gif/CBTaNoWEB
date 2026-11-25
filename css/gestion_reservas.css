@@ -1,0 +1,103 @@
+/* Estilos minimalistas para la pantalla de Gestión de reservas */
+.search-bar-clean .form-control {
+    height: 42px;
+    border-color: var(--border-field);
+    font-size: 13.5px;
+}
+
+.search-bar-clean .form-control:focus {
+    border-color: var(--green-main);
+    box-shadow: none;
+}
+
+.filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border: 1px solid var(--border-field);
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.filter-tab:hover {
+    background-color: var(--gray-light);
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.filter-tab.active {
+    background-color: var(--green-main);
+    border-color: var(--green-main);
+    color: #ffffff;
+}
+
+.filter-count {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.85;
+}
+
+.folio-text {
+    font-weight: 600;
+    color: var(--text-main);
+    display: block;
+}
+
+.estado-texto {
+    font-size: 13px;
+    color: var(--text-main);
+}
+
+.estado-secundario {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.modal-summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-card);
+    font-size: 13.5px;
+}
+
+.modal-summary-row:last-child {
+    border-bottom: 0;
+}
+
+.pagination-reservas .page-link {
+    color: var(--text-main);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    margin: 0 3px;
+    min-width: 38px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.pagination-reservas .page-link:hover {
+    background-color: var(--gray-light);
+    text-decoration: none;
+}
+
+.pagination-reservas .page-item.active .page-link {
+    background-color: var(--green-main);
+    border-color: var(--green-main);
+    color: #ffffff;
+}
