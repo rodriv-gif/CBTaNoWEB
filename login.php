@@ -8,7 +8,7 @@ if (($_SESSION["tipo"] ?? "") === "lector") {
 }
 date_default_timezone_set("America/Mexico_City");
 
-require "config/conexion.php"; // aquí viene la conexión $pdo
+require "config/conexion.php"; // aquí viene la conexión
 
 // Compara con hash (cuentas nuevas) o con texto plano (cuentas viejas)
 function contrasenia_correcta($escrita, $guardada)
@@ -177,7 +177,7 @@ $texto_info = "Entra con tu matrícula o clave para consultar el catálogo, rese
             </div>
         </main>
 
-        <?php include "includes/footer.php"; ?>
+        <?php include "includes/footer.php"; ?> //se manda a llamar el footer
         <script src="./js/ver_password.js"></script>
     </body>
 </html>
