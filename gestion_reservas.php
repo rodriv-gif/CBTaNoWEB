@@ -1,3 +1,255 @@
+<?php
+session_start();
+date_default_timezone_set("America/Mexico_City");
+
+// Candado de seguridad: verifica que el bibliotecario haya iniciado sesión
+if (!isset($_SESSION['id_bibliotecario'])) {
+    header('Location: login.php?error=acceso_denegado');
+    exit;
+}
+
+require_once __DIR__ . '/config/conexion.php';
+$pagina_activa = "gestion_reservas.php";
+$ahora         = date('Y-m-d H:i:s');
+$error         = '';
+
+// Consulta días de préstamo configurados en la base de datos o aplica los valores por defecto
+$diasAlumno     = 7;
+$diasTrabajador = 15;
+$resConfig = mysqli_query($conexion, "SELECT clave, valor FROM tblconfiguracion");
+if ($resConfig) {
+    while ($conf = mysqli_fetch_assoc($resConfig)) {
+        if ($conf['clave'] === 'dias_prestamo_alumno' && is_numeric($conf['valor'])) {
+            $diasAlumno = (int)$conf['valor'];
+        }
+        if ($conf['clave'] === 'dias_prestamo_trabajador' && is_numeric($conf['valor'])) {
+            $diasTrabajador = (int)$conf['valor'];
+        }
+    }
+}
+
+// Procesa la confirmación del préstamo cuando se envía el formulario del modal por POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $idReserva      = (int)($_POST['id_reserva'] ?? 0);
+    $idTipoPrestamo = (int)($_POST['id_tipo_prestamo'] ?? 0);
+    $idBiblio       = (int)$_SESSION['id_bibliotecario'];
+
+    if ($idReserva <= 0 || $idTipoPrestamo <= 0) {
+        $error = 'Selecciona una reserva y un tipo de préstamo válidos.';
+    } else {
+        $sqlRes  = "SELECT id_reserva, matricula, numero_control, id_ejemplar
+                    FROM tblreservas
+                    WHERE id_reserva = ? AND id_estado_reserva = 1 AND fecha_limite >= ?";
+        $stmtRes = mysqli_prepare($conexion, $sqlRes);
+        mysqli_stmt_bind_param($stmtRes, "is", $idReserva, $ahora);
+        mysqli_stmt_execute($stmtRes);
+        $resDato     = mysqli_stmt_get_result($stmtRes);
+        $filaReserva = mysqli_fetch_assoc($resDato);
+        mysqli_stmt_close($stmtRes);
+
+        if (!$filaReserva) {
+            $error = 'La reserva seleccionada ya no está activa o ya venció.';
+        } else {
+            $fechaPrestamo = date('Y-m-d');
+            if ($idTipoPrestamo === 1) {
+                $fechaDevolucion = $fechaPrestamo;
+            } else {
+                $diasAsignados   = !empty($filaReserva['numero_control']) ? $diasTrabajador : $diasAlumno;
+                $fechaDevolucion = date('Y-m-d', strtotime('+' . $diasAsignados . ' days'));
+            }
+
+            $matriculaVal  = $filaReserva['matricula'] !== null ? (int)$filaReserva['matricula'] : null;
+            $numControlVal = $filaReserva['numero_control'] !== null ? (int)$filaReserva['numero_control'] : null;
+            $idEjemplarVal = (int)$filaReserva['id_ejemplar'];
+            $estadoPrest   = 1;
+
+            $sqlIns  = "INSERT INTO tblprestamos (id_bibliotecario, id_ejemplar, matricula, numero_control, id_tipo_prestamo, id_estado_prestamo, fecha_prestamo, fecha_devolucion)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmtIns = mysqli_prepare($conexion, $sqlIns);
+
+            if ($stmtIns) {
+                mysqli_stmt_bind_param($stmtIns, "iiiiiiss", $idBiblio, $idEjemplarVal, $matriculaVal, $numControlVal, $idTipoPrestamo, $estadoPrest, $fechaPrestamo, $fechaDevolucion);
+                if (mysqli_stmt_execute($stmtIns)) {
+                    $nuevoIdPrestamo = mysqli_insert_id($conexion);
+                    mysqli_stmt_close($stmtIns);
+
+                    $sqlUpd  = "UPDATE tblreservas SET id_estado_reserva = 2, id_prestamo = ? WHERE id_reserva = ?";
+                    $stmtUpd = mysqli_prepare($conexion, $sqlUpd);
+                    mysqli_stmt_bind_param($stmtUpd, "ii", $nuevoIdPrestamo, $idReserva);
+                    mysqli_stmt_execute($stmtUpd);
+                    mysqli_stmt_close($stmtUpd);
+
+                    header('Location: gestion_reservas.php?estado=activas&confirmado=1');
+                    exit;
+                } else {
+                    $error = 'Error al registrar el préstamo en la base de datos.';
+                }
+            }
+        }
+    }
+}
+
+// Calcula el texto sencillo del tiempo restante o del tiempo transcurrido desde que venció
+function obtenerTextoTiempo($fechaLimite, $fechaActual)
+{
+    $segundos = strtotime($fechaLimite) - strtotime($fechaActual);
+    $absoluto = abs($segundos);
+    $dias     = (int)floor($absoluto / 86400);
+    $horas    = (int)floor(($absoluto % 86400) / 3600);
+    $minutos  = max(1, (int)floor(($absoluto % 3600) / 60));
+
+    if ($segundos >= 0) {
+        if ($dias >= 1) {
+            return $dias === 1 ? 'Queda 1 día' : 'Quedan ' . $dias . ' días';
+        }
+        if ($horas >= 1) {
+            return $horas === 1 ? 'Queda 1 h' : 'Quedan ' . $horas . ' h';
+        }
+        return 'Quedan ' . $minutos . ' min';
+    }
+
+    if ($dias >= 1) {
+        return $dias === 1 ? 'Venció hace 1 día' : 'Venció hace ' . $dias . ' días';
+    }
+    if ($horas >= 1) {
+        return $horas === 1 ? 'Venció hace 1 h' : 'Venció hace ' . $horas . ' h';
+    }
+    return 'Venció hace ' . $minutos . ' min';
+}
+
+// Recibe y valida la pestaña seleccionada, la búsqueda y el número de página
+$estadoActual = $_GET['estado'] ?? 'activas';
+$estadosPermitidos = ['activas', 'confirmadas', 'vencidas', 'canceladas'];
+if (!in_array($estadoActual, $estadosPermitidos)) {
+    $estadoActual = 'activas';
+}
+
+$busqueda     = trim($_GET['q'] ?? '');
+$like         = '%' . $busqueda . '%';
+$paginaActual = (isset($_GET['p']) && is_numeric($_GET['p']) && (int)$_GET['p'] > 0) ? (int)$_GET['p'] : 1;
+$porPagina    = 6;
+
+// Obtiene el total de reservas en cada estado para mostrar el contador en las pestañas
+$conteos = [
+    'activas'     => 0,
+    'confirmadas' => 0,
+    'vencidas'    => 0,
+    'canceladas'  => 0,
+];
+$sqlConteos = "SELECT
+    SUM(CASE WHEN id_estado_reserva = 1 AND fecha_limite >= ? THEN 1 ELSE 0 END) AS activas,
+    SUM(CASE WHEN id_estado_reserva = 2 THEN 1 ELSE 0 END) AS confirmadas,
+    SUM(CASE WHEN id_estado_reserva = 1 AND fecha_limite < ? THEN 1 ELSE 0 END) AS vencidas,
+    SUM(CASE WHEN id_estado_reserva = 3 THEN 1 ELSE 0 END) AS canceladas
+    FROM tblreservas";
+$stmtConteos = mysqli_prepare($conexion, $sqlConteos);
+if ($stmtConteos) {
+    mysqli_stmt_bind_param($stmtConteos, "ss", $ahora, $ahora);
+    mysqli_stmt_execute($stmtConteos);
+    $resConteos = mysqli_stmt_get_result($stmtConteos);
+    if ($filaC = mysqli_fetch_assoc($resConteos)) {
+        $conteos['activas']     = (int)($filaC['activas'] ?? 0);
+        $conteos['confirmadas'] = (int)($filaC['confirmadas'] ?? 0);
+        $conteos['vencidas']    = (int)($filaC['vencidas'] ?? 0);
+        $conteos['canceladas']  = (int)($filaC['canceladas'] ?? 0);
+    }
+    mysqli_stmt_close($stmtConteos);
+}
+
+// Define la condición SQL, encabezados y orden según la pestaña elegida por el usuario
+$usaFecha = false;
+if ($estadoActual === 'activas') {
+    $condicionEstado = "r.id_estado_reserva = 1 AND r.fecha_limite >= ?";
+    $ordenSql        = "r.fecha_limite ASC";
+    $tituloTabla     = "Reservas activas";
+    $subtituloTabla  = "Ordenadas por fecha límite más próxima";
+    $encabezadoCol4  = "Tiempo restante";
+    $usaFecha        = true;
+} elseif ($estadoActual === 'vencidas') {
+    $condicionEstado = "r.id_estado_reserva = 1 AND r.fecha_limite < ?";
+    $ordenSql        = "r.fecha_limite DESC";
+    $tituloTabla     = "Reservas vencidas";
+    $subtituloTabla  = "No se recogieron a tiempo; puedes liberar el ejemplar";
+    $encabezadoCol4  = "Tiempo vencido";
+    $usaFecha        = true;
+} elseif ($estadoActual === 'confirmadas') {
+    $condicionEstado = "r.id_estado_reserva = 2";
+    $ordenSql        = "r.id_reserva DESC";
+    $tituloTabla     = "Reservas confirmadas";
+    $subtituloTabla  = "Reservas entregadas y registradas como préstamo";
+    $encabezadoCol4  = "Préstamo";
+} else {
+    $condicionEstado = "r.id_estado_reserva = 3";
+    $ordenSql        = "r.id_reserva DESC";
+    $tituloTabla     = "Reservas canceladas";
+    $subtituloTabla  = "Historial de reservas canceladas o liberadas";
+    $encabezadoCol4  = "Estado";
+}
+
+$joinsYBusqueda = "FROM tblreservas r
+                   INNER JOIN tblejemplares e ON e.id_ejemplar = r.id_ejemplar
+                   INNER JOIN tbllibros l ON l.id_libro = e.id_libro
+                   LEFT JOIN tblalumnos a ON a.matricula = r.matricula
+                   LEFT JOIN tbltrabajadores t ON t.numero_control = r.numero_control
+                   WHERE $condicionEstado
+                     AND (? = '' OR r.folio LIKE ?
+                          OR CAST(r.matricula AS CHAR) LIKE ?
+                          OR CAST(r.numero_control AS CHAR) LIKE ?
+                          OR CONCAT_WS(' ', a.nombre, a.apellido_paterno, a.apellido_materno) LIKE ?
+                          OR CONCAT_WS(' ', t.nombre, t.apellido_paterno, t.apellido_materno) LIKE ?
+                          OR l.titulo_libro LIKE ?
+                          OR CAST(e.id_ejemplar AS CHAR) LIKE ?)";
+
+// Cuenta el total de registros del filtro actual para calcular las páginas
+$totalRegistros = 0;
+$stmtTotal      = mysqli_prepare($conexion, "SELECT COUNT(*) AS total " . $joinsYBusqueda);
+if ($stmtTotal) {
+    if ($usaFecha) {
+        mysqli_stmt_bind_param($stmtTotal, "sssssssss", $ahora, $busqueda, $like, $like, $like, $like, $like, $like, $like);
+    } else {
+        mysqli_stmt_bind_param($stmtTotal, "ssssssss", $busqueda, $like, $like, $like, $like, $like, $like, $like);
+    }
+    mysqli_stmt_execute($stmtTotal);
+    $resTotal = mysqli_stmt_get_result($stmtTotal);
+    if ($filaTotal = mysqli_fetch_assoc($resTotal)) {
+        $totalRegistros = (int)$filaTotal['total'];
+    }
+    mysqli_stmt_close($stmtTotal);
+}
+
+$totalPaginas = $totalRegistros > 0 ? (int)ceil($totalRegistros / $porPagina) : 1;
+if ($paginaActual > $totalPaginas) {
+    $paginaActual = $totalPaginas;
+}
+$offset = ($paginaActual - 1) * $porPagina;
+
+// Consulta únicamente las reservas correspondientes a la página actual
+$sqlListado = "SELECT r.id_reserva, r.folio, r.matricula, r.numero_control, r.id_ejemplar,
+               r.fecha_reserva, r.fecha_limite, r.id_prestamo,
+               e.inventario, l.titulo_libro,
+               COALESCE(
+                   CONCAT_WS(' ', a.nombre, a.apellido_paterno, a.apellido_materno),
+                   CONCAT_WS(' ', t.nombre, t.apellido_paterno, t.apellido_materno)
+               ) AS nombre_lector
+               " . $joinsYBusqueda . "
+               ORDER BY $ordenSql
+               LIMIT ? OFFSET ?";
+
+$resultado = false;
+$stmtList  = mysqli_prepare($conexion, $sqlListado);
+if ($stmtList) {
+    if ($usaFecha) {
+        mysqli_stmt_bind_param($stmtList, "sssssssssii", $ahora, $busqueda, $like, $like, $like, $like, $like, $like, $like, $porPagina, $offset);
+    } else {
+        mysqli_stmt_bind_param($stmtList, "ssssssssii", $busqueda, $like, $like, $like, $like, $like, $like, $like, $porPagina, $offset);
+    }
+    mysqli_stmt_execute($stmtList);
+    $resultado = mysqli_stmt_get_result($stmtList);
+}
+
+// Consulta los tipos de préstamo disponibles en la BD para el modal de confirmación
+$resTiposPrestamo = mysqli_query($conexion, "SELECT id_tipo_prestamo, tipo FROM tbltipo_prestamo ORDER BY id_tipo_prestamo DESC");
+?>
 <!doctype html>
 <html lang="es">
     <head>
@@ -9,775 +261,264 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="./css/bootstrap.min.css" />
-
-        <style>
-            :root {
-                --green-main: #0f5132;
-                --green-medium: #2e7d58;
-                --green-dark: #0a3d26;
-                --green-success: #1f6b47;
-                --green-soft: #e6f4ec;
-                --blue-accent: #1e3a8a;
-                --red-alert: #b42318;
-                --red-soft: #fee4e2;
-                --gray-light: #f5f7f6;
-                --text-main: #212121;
-                --text-muted: #4b5563;
-                --border-card: #e5e7eb;
-                --border-field: #d0d5dd;
-            }
-
-            body {
-                font-family: "Poppins", "Segoe UI", Arial, sans-serif;
-                font-size: 14px;
-                line-height: 1.5;
-                color: var(--text-main);
-                background-color: var(--gray-light);
-            }
-
-            /* ---------- Layout y menú lateral ---------- */
-            .admin-layout {
-                display: flex;
-                min-height: 100vh;
-                background: linear-gradient(to right, var(--green-main) 200px, transparent 200px);
-            }
-            .sidebar {
-                width: 200px;
-                flex-shrink: 0;
-                background-color: var(--green-main);
-                color: #fff;
-                display: flex;
-                flex-direction: column;
-                position: sticky;
-                top: 0;
-                height: 100vh;
-            }
-            .sidebar-brand {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 14px 16px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-                text-decoration: none;
-                color: #fff;
-            }
-            .sidebar-brand img {
-                height: 38px;
-                width: auto;
-            }
-            .sidebar-brand .brand-name {
-                font-weight: 600;
-                font-size: 13px;
-                line-height: 1.2;
-                display: block;
-            }
-            .sidebar-brand .brand-sub {
-                font-size: 10px;
-                line-height: 1.2;
-                display: block;
-            }
-            .sidebar-menu {
-                list-style: none;
-                margin: 0;
-                padding: 0;
-            }
-            .sidebar-menu a {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 8px 16px;
-                color: #fff;
-                font-size: 12.5px;
-                line-height: 1.25;
-                text-decoration: none;
-                border-left: 4px solid transparent;
-            }
-            .sidebar-menu a:hover {
-                background-color: rgba(255, 255, 255, 0.1);
-            }
-            .sidebar-menu a.active {
-                background-color: var(--green-medium);
-                border-left-color: #fff;
-            }
-            .sidebar-menu a .chevron {
-                margin-left: auto;
-                width: 16px;
-                height: 16px;
-            }
-            .sidebar-main {
-                flex-grow: 1;
-            }
-            .user-card {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin: 0 12px 14px 12px;
-                padding: 10px 12px;
-                background-color: rgba(255, 255, 255, 0.08);
-                border: 1px solid rgba(255, 255, 255, 0.18);
-                border-radius: 10px;
-            }
-            .user-avatar {
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                background-color: var(--green-soft);
-                color: var(--green-main);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-            .user-name {
-                font-size: 12px;
-                line-height: 1.2;
-                font-weight: 500;
-                display: block;
-            }
-            .user-role {
-                font-size: 11px;
-                line-height: 1.2;
-                display: block;
-                margin-top: 2px;
-            }
-            .sidebar-bottom {
-                border-top: 1px solid rgba(255, 255, 255, 0.15);
-                padding-top: 4px;
-                margin-bottom: 8px;
-            }
-
-            /* ---------- Contenido principal ---------- */
-            .admin-main {
-                flex-grow: 1;
-                min-width: 0;
-                padding: 28px 32px;
-            }
-            .admin-content {
-                max-width: 1360px;
-                margin: 0 auto;
-            }
-            .page-title {
-                font-size: 24px;
-                font-weight: 600;
-                color: var(--green-main);
-                margin: 0 0 6px 0;
-            }
-            .page-subtitle {
-                color: var(--text-muted);
-                font-size: 13px;
-                margin: 0 0 22px 0;
-            }
-            @media (max-width: 991.98px) {
-                .admin-layout {
-                    flex-direction: column;
-                    background: none;
-                }
-                .sidebar {
-                    width: 100%;
-                    height: auto;
-                    position: static;
-                }
-                .admin-main {
-                    padding: 28px 20px;
-                }
-            }
-
-            .icon {
-                width: 18px;
-                height: 18px;
-                fill: none;
-                stroke: currentColor;
-                stroke-width: 1.75;
-                stroke-linecap: round;
-                stroke-linejoin: round;
-                flex-shrink: 0;
-            }
-
-            /* ---------- Botones ---------- */
-            .btn-brand {
-                font-weight: 500;
-                border-radius: 8px;
-                padding: 6px 14px;
-                min-height: 36px;
-                font-size: 13px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                text-decoration: none;
-                background-color: var(--green-main);
-                color: #fff;
-                border: 1.5px solid var(--green-main);
-            }
-            .btn-brand:hover {
-                background-color: var(--green-medium);
-                border-color: var(--green-medium);
-                color: #fff;
-            }
-            .btn:focus-visible,
-            a:focus-visible {
-                outline: 3px solid var(--blue-accent);
-                outline-offset: 2px;
-            }
-
-            /* ---------- Panel, filtros, etiquetas y tabla ---------- */
-            .panel {
-                background-color: #fff;
-                border: 1px solid var(--border-card);
-                border-radius: 12px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            }
-            .pill {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                padding: 6px 18px;
-                border: 1px solid var(--border-field);
-                border-radius: 999px;
-                background: #fff;
-                color: var(--text-main);
-                text-decoration: none;
-                font-weight: 500;
-            }
-            .pill.active {
-                background: var(--green-main);
-                border-color: var(--green-main);
-                color: #fff;
-            }
-            .tag {
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                padding: 2px 12px;
-                border-radius: 999px;
-                font-size: 13px;
-                font-weight: 500;
-                white-space: nowrap;
-            }
-            .tag .icon {
-                width: 16px;
-                height: 16px;
-            }
-            .tag-ok {
-                color: var(--green-success);
-                background-color: var(--green-soft);
-            }
-            .tag-off {
-                color: #475467;
-                background-color: #f2f4f7;
-            }
-            .tag-blue {
-                color: var(--blue-accent);
-                background-color: #e0e7ff;
-            }
-            .tag-red {
-                color: var(--red-alert);
-                background-color: var(--red-soft);
-            }
-            .text-amber {
-                color: #92400e;
-            }
-
-            .table-lib {
-                margin: 0;
-                --bs-table-bg: transparent;
-            }
-            .table-lib thead th {
-                background-color: var(--gray-light);
-                font-weight: 600;
-                font-size: 13px;
-                padding: 10px 12px;
-                border-bottom: 0;
-                white-space: nowrap;
-            }
-            .table-lib td {
-                padding: 10px 12px;
-                font-size: 13px;
-                vertical-align: middle;
-                border-color: var(--border-card);
-            }
-            .table-lib .sub {
-                color: var(--text-muted);
-                font-size: 13px;
-                display: block;
-            }
-            .table-lib tr.row-selected {
-                --bs-table-bg: var(--green-soft);
-            }
-            .table-lib tr.row-selected > td:first-child {
-                border-left: 4px solid var(--green-main);
-            }
-
-            .detail-title {
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
-                color: var(--green-main);
-                margin-bottom: 6px;
-            }
-            .detail dt {
-                font-weight: 400;
-                color: var(--text-muted);
-            }
-            .detail dd {
-                margin-bottom: 4px;
-            }
-
-            /* ---------- Modal Cambiar contraseña ---------- */
-            .pw-icon {
-                width: 20px;
-                height: 20px;
-                fill: none;
-                stroke: currentColor;
-                stroke-width: 1.75;
-                stroke-linecap: round;
-                stroke-linejoin: round;
-            }
-            .pw-circle {
-                width: 52px;
-                height: 52px;
-                border-radius: 50%;
-                background-color: var(--green-soft);
-                color: var(--green-main);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-            .pw-group {
-                position: relative;
-            }
-            .pw-group .pw-left {
-                position: absolute;
-                left: 14px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: var(--text-muted);
-            }
-            .pw-group .form-control {
-                height: 48px;
-                padding-left: 44px;
-                padding-right: 46px;
-                border-color: var(--border-field);
-                border-radius: 8px;
-            }
-            .pw-group .form-control:focus {
-                border-color: var(--green-medium);
-                box-shadow: 0 0 0 3px rgba(46, 125, 88, 0.2);
-            }
-            .pw-group .pw-toggle {
-                position: absolute;
-                right: 6px;
-                top: 50%;
-                transform: translateY(-50%);
-                border: 0;
-                background: transparent;
-                color: var(--text-muted);
-                padding: 8px;
-            }
-        </style>
+        <link rel="stylesheet" href="./css/estilos.css" />
+        <link rel="stylesheet" href="./css/bibliotecario.css" />
+        <link rel="stylesheet" href="./css/gestion_reservas.css" />
     </head>
 
     <body>
-        <!-- Iconos SVG usados en esta página -->
-        <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-            <symbol id="i-clipboard-list" viewBox="0 0 24 24">
-                <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                <path d="M12 11h4" />
-                <path d="M12 16h4" />
-                <path d="M8 11h.01" />
-                <path d="M8 16h.01" />
-            </symbol>
-            <symbol id="i-book-open" viewBox="0 0 24 24">
-                <path d="M12 7v14" />
-                <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
-            </symbol>
-            <symbol id="i-layout-dashboard" viewBox="0 0 24 24">
-                <rect width="7" height="9" x="3" y="3" rx="1" />
-                <rect width="7" height="5" x="14" y="3" rx="1" />
-                <rect width="7" height="9" x="14" y="12" rx="1" />
-                <rect width="7" height="5" x="3" y="16" rx="1" />
-            </symbol>
-            <symbol id="i-building" viewBox="0 0 24 24">
-                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
-                <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
-                <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
-                <path d="M10 6h4" />
-                <path d="M10 10h4" />
-                <path d="M10 14h4" />
-                <path d="M10 18h4" />
-            </symbol>
-            <symbol id="i-lock" viewBox="0 0 24 24">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </symbol>
-            <symbol id="i-log-out" viewBox="0 0 24 24">
-                <path d="m16 17 5-5-5-5" />
-                <path d="M21 12H9" />
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            </symbol>
-            <symbol id="i-user" viewBox="0 0 24 24">
-                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-            </symbol>
-            <symbol id="i-chevron-right" viewBox="0 0 24 24">
-                <path d="m9 18 6-6-6-6" />
-            </symbol>
-            <symbol id="i-bookmark" viewBox="0 0 24 24">
-                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-            </symbol>
-            <symbol id="i-search" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-            </symbol>
-            <symbol id="i-circle-check" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <path d="m9 12 2 2 4-4" />
-            </symbol>
-            <symbol id="i-file-text" viewBox="0 0 24 24">
-                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                <path d="M10 9H8" />
-                <path d="M16 13H8" />
-                <path d="M16 17H8" />
-            </symbol>
-            <symbol id="i-id-card" viewBox="0 0 24 24">
-                <path d="M16 10h2" />
-                <path d="M16 14h2" />
-                <path d="M6.17 15a3 3 0 0 1 5.66 0" />
-                <circle cx="9" cy="11" r="2" />
-                <rect x="2" y="5" width="20" height="14" rx="2" />
-            </symbol>
-            <symbol id="pw-eye" viewBox="0 0 24 24">
-                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
-                <circle cx="12" cy="12" r="3" />
-            </symbol>
-            <symbol id="pw-eye-off" viewBox="0 0 24 24">
-                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
-                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
-                <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
-                <path d="m2 2 20 20" />
-            </symbol>
-        </svg>
+        <?php include "includes/iconos.php"; ?>
+        <?php include "includes/iconos_catalogo.php"; ?>
 
         <div class="admin-layout">
-            <!-- Menú lateral del bibliotecario -->
-            <aside class="sidebar">
-                <a href="panel_control.php" class="sidebar-brand">
-                    <img src="./img/logo-cbta5-blanco.png" alt="Logotipo del CBTa No. 5" />
-                    <span>
-                        <span class="brand-name">Biblioteca Escolar</span>
-                        <span class="brand-sub">CBTa No. 5 · Huejutla, Hgo.</span>
-                    </span>
-                </a>
-
-                <div class="sidebar-main">
-                    <ul class="sidebar-menu">
-                        <li>
-                            <a href="gestion_reservas.php" class="active" aria-current="page">
-                                <svg class="icon"><use href="#i-clipboard-list" /></svg> Gestión de reservas
-                            </a>
-                        </li>
-                        <li>
-                            <a href="publicacion_catalogo.php">
-                                <svg class="icon"><use href="#i-book-open" /></svg> Publicación en catálogo
-                            </a>
-                        </li>
-                        <li>
-                            <a href="panel_control.php">
-                                <svg class="icon"><use href="#i-layout-dashboard" /></svg> Panel de control
-                            </a>
-                        </li>
-                        <li>
-                            <a href="datos_biblioteca.php">
-                                <svg class="icon"><use href="#i-building" /></svg> Datos de la biblioteca
-                                <svg class="icon chevron"><use href="#i-chevron-right" /></svg>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="user-card">
-                    <div class="user-avatar">
-                        <svg class="icon"><use href="#i-user" /></svg>
-                    </div>
-                    <div>
-                        <span class="user-name">[Nombre completo]</span>
-                        <span class="user-role">Bibliotecario</span>
-                    </div>
-                </div>
-
-                <ul class="sidebar-menu sidebar-bottom">
-                    <li>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                            <svg class="icon"><use href="#i-lock" /></svg> Cambiar contraseña
-                        </a>
-                    </li>
-                    <li>
-                        <a href="logout.php">
-                            <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
-                        </a>
-                    </li>
-                </ul>
-            </aside>
+            <?php include "includes/sidebar_bibliotecario.php"; ?>
 
             <main class="admin-main">
                 <div class="admin-content">
-                    <h1 class="page-title">Gestión de reservas</h1>
-                    <p class="page-subtitle">Atiende a los lectores que llegan por su libro y confirma el préstamo.</p>
+                    <div class="mb-4">
+                        <h1 class="page-title">Gestión de reservas</h1>
+                        <p class="page-subtitle mb-0">Consulta las reservas por estado, confirma el préstamo en mostrador o libera ejemplares vencidos.</p>
+                    </div>
 
-                    <form action="" method="get" class="panel d-flex align-items-center gap-2 p-2 mb-3">
-                        <svg class="icon ms-2 text-secondary" style="width: 22px; height: 22px"><use href="#i-search" /></svg>
-                        <input
-                            type="search"
-                            class="form-control border-0 shadow-none"
-                            placeholder="Busca por matrícula o clave, nombre, título del libro o clave del ejemplar"
-                            aria-label="Buscar reserva"
-                        />
-                        <button type="submit" class="btn btn-brand">Buscar</button>
-                    </form>
+                    <?php if ($error !== ''): ?>
+                        <div class="alert alert-danger py-2"><?= htmlspecialchars($error) ?></div>
+                    <?php elseif (isset($_GET['confirmado'])): ?>
+                        <div class="alert alert-success py-2">El préstamo se registró correctamente y la reserva pasó a Confirmadas.</div>
+                    <?php elseif (isset($_GET['cancelado'])): ?>
+                        <div class="alert alert-secondary py-2">La reserva fue cancelada y el ejemplar quedó libre nuevamente.</div>
+                    <?php endif; ?>
 
-                    <ul class="nav gap-2 mb-3">
-                        <li>
-                            <a href="#" class="pill active">
-                                Activas <span class="badge rounded-pill" style="background: rgba(255, 255, 255, 0.25)">6</span>
+                    <div class="panel p-3 mb-4">
+                        <form method="GET" action="gestion_reservas.php" class="search-bar-clean d-flex flex-wrap gap-2 mb-3">
+                            <input type="hidden" name="estado" value="<?= htmlspecialchars($estadoActual) ?>" />
+                            <div class="input-group flex-grow-1">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <svg class="icon text-secondary"><use href="#i-search" /></svg>
+                                </span>
+                                <input
+                                    type="search"
+                                    name="q"
+                                    class="form-control border-start-0"
+                                    value="<?= htmlspecialchars($busqueda) ?>"
+                                    placeholder="Buscar por folio, matrícula o clave, nombre del lector o libro"
+                                    aria-label="Buscar reserva"
+                                />
+                            </div>
+                            <button type="submit" class="btn btn-brand">Buscar</button>
+                            <?php if ($busqueda !== ''): ?>
+                                <a href="gestion_reservas.php?estado=<?= urlencode($estadoActual) ?>" class="btn btn-outline-brand">Limpiar</a>
+                            <?php endif; ?>
+                        </form>
+
+                        <div class="filter-tabs">
+                            <a href="gestion_reservas.php?estado=activas&q=<?= urlencode($busqueda) ?>" class="filter-tab <?= $estadoActual === 'activas' ? 'active' : '' ?>">
+                                Activas <span class="filter-count">(<?= $conteos['activas'] ?>)</span>
                             </a>
-                        </li>
-                        <li><a href="#" class="pill">Confirmadas</a></li>
-                        <li><a href="#" class="pill">Vencidas</a></li>
-                        <li><a href="#" class="pill">Canceladas</a></li>
-                    </ul>
-
-                    <div class="row g-4">
-                        <div class="col-xl-8">
-                            <section class="panel overflow-hidden">
-                                <div class="d-flex justify-content-between align-items-center px-4 py-3">
-                                    <h2 class="h5 fw-semibold mb-0">Reservas activas</h2>
-                                    <span class="small text-secondary">Ordenadas por fecha límite</span>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table table-lib">
-                                        <thead>
-                                            <tr>
-                                                <th>Lector</th>
-                                                <th>Libro</th>
-                                                <th>Reservada</th>
-                                                <th>Fecha límite</th>
-                                                <th>Tiempo restante</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="row-selected">
-                                                <td>[Nombre del lector]<span class="sub">[Matrícula o clave] · Alumno</span></td>
-                                                <td>[Título del libro]<span class="sub">Ejemplar [clave]</span></td>
-                                                <td>31/10/2026<span class="sub">10:15</span></td>
-                                                <td>02/11/2026</td>
-                                                <td class="text-amber fw-semibold">Quedan 5 h</td>
-                                            </tr>
-                                            <tr>
-                                                <td>[Nombre del lector]<span class="sub">[Matrícula o clave] · Trabajador</span></td>
-                                                <td>[Título del libro]<span class="sub">Ejemplar [clave]</span></td>
-                                                <td>31/10/2026<span class="sub">10:15</span></td>
-                                                <td>02/11/2026</td>
-                                                <td class="text-amber fw-semibold">Queda 1 día</td>
-                                            </tr>
-                                            <tr>
-                                                <td>[Nombre del lector]<span class="sub">[Matrícula o clave] · Alumno</span></td>
-                                                <td>[Título del libro]<span class="sub">Ejemplar [clave]</span></td>
-                                                <td>31/10/2026<span class="sub">10:15</span></td>
-                                                <td>03/11/2026</td>
-                                                <td>Quedan 2 días</td>
-                                            </tr>
-                                            <tr>
-                                                <td>[Nombre del lector]<span class="sub">[Matrícula o clave] · Alumno</span></td>
-                                                <td>[Título del libro]<span class="sub">Ejemplar [clave]</span></td>
-                                                <td>31/10/2026<span class="sub">10:15</span></td>
-                                                <td>04/11/2026</td>
-                                                <td>Quedan 3 días</td>
-                                            </tr>
-                                            <tr>
-                                                <td>[Nombre del lector]<span class="sub">[Matrícula o clave] · Trabajador</span></td>
-                                                <td>[Título del libro]<span class="sub">Ejemplar [clave]</span></td>
-                                                <td>31/10/2026<span class="sub">10:15</span></td>
-                                                <td>05/11/2026</td>
-                                                <td>Quedan 4 días</td>
-                                            </tr>
-                                            <tr>
-                                                <td>[Nombre del lector]<span class="sub">[Matrícula o clave] · Alumno</span></td>
-                                                <td>[Título del libro]<span class="sub">Ejemplar [clave]</span></td>
-                                                <td>31/10/2026<span class="sub">10:15</span></td>
-                                                <td>06/11/2026</td>
-                                                <td>Quedan 5 días</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        </div>
-
-                        <div class="col-xl-4">
-                            <section class="panel overflow-hidden">
-                                <div
-                                    class="d-flex justify-content-between align-items-center px-4 py-3"
-                                    style="background: var(--gray-light)"
-                                >
-                                    <h2 class="h5 fw-semibold mb-0">Detalle de la reserva</h2>
-                                    <span class="tag tag-blue">
-                                        <svg class="icon"><use href="#i-bookmark" /></svg> Activa
-                                    </span>
-                                </div>
-                                <div class="p-4">
-                                    <p class="detail-title">Lector</p>
-                                    <dl class="row detail mb-3">
-                                        <dt class="col-5">Nombre</dt>
-                                        <dd class="col-7">[Nombre del lector]</dd>
-                                        <dt class="col-5">Matrícula o clave</dt>
-                                        <dd class="col-7">[Matrícula o clave]</dd>
-                                        <dt class="col-5">Tipo de usuario</dt>
-                                        <dd class="col-7">Alumno</dd>
-                                        <dt class="col-5">Carrera</dt>
-                                        <dd class="col-7">[Carrera]</dd>
-                                    </dl>
-                                    <p class="detail-title">Libro</p>
-                                    <dl class="row detail mb-3">
-                                        <dt class="col-5">Título</dt>
-                                        <dd class="col-7">[Título del libro]</dd>
-                                        <dt class="col-5">Autor</dt>
-                                        <dd class="col-7">[Autor]</dd>
-                                        <dt class="col-5">Clave del ejemplar</dt>
-                                        <dd class="col-7">[Clave del ejemplar]</dd>
-                                    </dl>
-                                    <p class="detail-title">Reserva</p>
-                                    <dl class="row detail mb-3">
-                                        <dt class="col-5">Fecha y hora</dt>
-                                        <dd class="col-7">31/10/2026, 10:15</dd>
-                                        <dt class="col-5">Fecha límite para recogerla</dt>
-                                        <dd class="col-7">02/11/2026 · <span class="text-amber fw-medium">quedan 5 h</span></dd>
-                                    </dl>
-
-                                    <div class="rounded-3 p-3 mb-3" style="background: var(--green-soft); border: 1px solid #bfd9cb">
-                                        <p class="fw-semibold mb-2">Antes de confirmar</p>
-                                        <p class="d-flex gap-2 mb-2">
-                                            <svg class="icon mt-1"><use href="#i-file-text" /></svg> Verifica los datos contra el
-                                            comprobante del lector.
-                                        </p>
-                                        <p class="d-flex gap-2 mb-2">
-                                            <svg class="icon mt-1"><use href="#i-id-card" /></svg> Revisa la credencial (alumno) o el recibo
-                                            (trabajador).
-                                        </p>
-                                        <p class="small text-secondary mb-0">Esta revisión es presencial y no se registra en el sistema.</p>
-                                    </div>
-
-                                    <button type="button" class="btn btn-brand w-100 py-2">
-                                        <svg class="icon"><use href="#i-circle-check" /></svg> Confirmar préstamo
-                                    </button>
-                                    <p class="small text-secondary text-center mt-2 mb-0">
-                                        La fecha límite de devolución se calcula al confirmar, según el tipo de usuario.
-                                    </p>
-                                </div>
-                            </section>
+                            <a href="gestion_reservas.php?estado=confirmadas&q=<?= urlencode($busqueda) ?>" class="filter-tab <?= $estadoActual === 'confirmadas' ? 'active' : '' ?>">
+                                Confirmadas <span class="filter-count">(<?= $conteos['confirmadas'] ?>)</span>
+                            </a>
+                            <a href="gestion_reservas.php?estado=vencidas&q=<?= urlencode($busqueda) ?>" class="filter-tab <?= $estadoActual === 'vencidas' ? 'active' : '' ?>">
+                                Vencidas <span class="filter-count">(<?= $conteos['vencidas'] ?>)</span>
+                            </a>
+                            <a href="gestion_reservas.php?estado=canceladas&q=<?= urlencode($busqueda) ?>" class="filter-tab <?= $estadoActual === 'canceladas' ? 'active' : '' ?>">
+                                Canceladas <span class="filter-count">(<?= $conteos['canceladas'] ?>)</span>
+                            </a>
                         </div>
                     </div>
+
+                    <section class="panel overflow-hidden">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 px-4 py-3 border-bottom">
+                            <div>
+                                <h2 class="h6 fw-semibold section-green-title mb-0"><?= htmlspecialchars($tituloTabla) ?></h2>
+                                <span class="small text-secondary"><?= htmlspecialchars($subtituloTabla) ?></span>
+                            </div>
+                            <span class="small text-secondary">Mostrando <?= $resultado ? mysqli_num_rows($resultado) : 0 ?> de <?= $totalRegistros ?></span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-lib align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Folio y Lector</th>
+                                        <th>Libro</th>
+                                        <th>Fechas</th>
+                                        <th><?= htmlspecialchars($encabezadoCol4) ?></th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if ($resultado && mysqli_num_rows($resultado) > 0): ?>
+                                        <?php while ($reserva = mysqli_fetch_assoc($resultado)): ?>
+                                            <?php
+                                            $esTrabajador  = !empty($reserva['numero_control']);
+                                            $claveLector   = $esTrabajador ? $reserva['numero_control'] : $reserva['matricula'];
+                                            $rolLector     = $esTrabajador ? 'Trabajador' : 'Alumno';
+                                            $diasPrestamo  = $esTrabajador ? $diasTrabajador : $diasAlumno;
+                                            $lectorNombre  = trim($reserva['nombre_lector'] ?? '') !== '' ? $reserva['nombre_lector'] : 'Sin nombre';
+                                            $fechaResTexto = date('d/m/Y H:i', strtotime($reserva['fecha_reserva']));
+                                            $fechaLimTexto = date('d/m/Y H:i', strtotime($reserva['fecha_limite']));
+                                            $textoEjemplar = 'Ejemplar #' . $reserva['id_ejemplar'] . ($reserva['inventario'] ? ' (Inv. ' . $reserva['inventario'] . ')' : '');
+                                            ?>
+                                            <tr>
+                                                <td>
+                                                    <span class="folio-text"><?= htmlspecialchars($reserva['folio']) ?></span>
+                                                    <span><?= htmlspecialchars($lectorNombre) ?></span>
+                                                    <span class="sub"><?= htmlspecialchars((string)$claveLector) ?> · <?= $rolLector ?></span>
+                                                </td>
+                                                <td>
+                                                    <span class="fw-medium"><?= htmlspecialchars($reserva['titulo_libro']) ?></span>
+                                                    <span class="sub"><?= htmlspecialchars($textoEjemplar) ?></span>
+                                                </td>
+                                                <td>
+                                                    <span>Límite: <?= $fechaLimTexto ?></span>
+                                                    <span class="sub">Reservada: <?= $fechaResTexto ?></span>
+                                                </td>
+                                                <td>
+                                                    <?php if ($estadoActual === 'activas' || $estadoActual === 'vencidas'): ?>
+                                                        <span class="estado-texto"><?= htmlspecialchars(obtenerTextoTiempo($reserva['fecha_limite'], $ahora)) ?></span>
+                                                    <?php elseif ($estadoActual === 'confirmadas'): ?>
+                                                        <span class="estado-texto">Entregada<?= $reserva['id_prestamo'] ? ' · Préstamo #' . (int)$reserva['id_prestamo'] : '' ?></span>
+                                                    <?php else: ?>
+                                                        <span class="estado-secundario">Cancelada</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-end">
+                                                    <?php if ($estadoActual === 'activas'): ?>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-brand btn-sm me-1"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#confirmarPrestamoModal"
+                                                            data-id="<?= (int)$reserva['id_reserva'] ?>"
+                                                            data-folio="<?= htmlspecialchars($reserva['folio'], ENT_QUOTES) ?>"
+                                                            data-lector="<?= htmlspecialchars($lectorNombre . ' (' . $rolLector . ')', ENT_QUOTES) ?>"
+                                                            data-libro="<?= htmlspecialchars($reserva['titulo_libro'] . ' · ' . $textoEjemplar, ENT_QUOTES) ?>"
+                                                            data-dias="<?= $diasPrestamo ?>"
+                                                        >
+                                                            Confirmar
+                                                        </button>
+                                                        <a
+                                                            href="reserva_cancelar.php?id=<?= (int)$reserva['id_reserva'] ?>&estado=activas"
+                                                            class="btn btn-danger-soft btn-sm"
+                                                            onclick="return confirm('¿Seguro que deseas cancelar la reserva <?= htmlspecialchars($reserva['folio'], ENT_QUOTES) ?>?');"
+                                                        >
+                                                            Cancelar
+                                                        </a>
+                                                    <?php elseif ($estadoActual === 'vencidas'): ?>
+                                                        <a
+                                                            href="reserva_cancelar.php?id=<?= (int)$reserva['id_reserva'] ?>&estado=vencidas"
+                                                            class="btn btn-danger-soft btn-sm"
+                                                            onclick="return confirm('¿Deseas liberar el ejemplar de la reserva vencida <?= htmlspecialchars($reserva['folio'], ENT_QUOTES) ?>?');"
+                                                        >
+                                                            Liberar ejemplar
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <span class="estado-secundario">—</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4 text-muted">No hay reservas registradas en este apartado.</td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <?php if ($totalPaginas > 1): ?>
+                        <nav class="pagination-reservas d-flex justify-content-center mt-4" aria-label="Paginación de reservas">
+                            <ul class="pagination mb-0">
+                                <li class="page-item <?= $paginaActual <= 1 ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="gestion_reservas.php?estado=<?= urlencode($estadoActual) ?>&q=<?= urlencode($busqueda) ?>&p=<?= $paginaActual - 1 ?>">
+                                        <svg class="icon"><use href="#i-arrow-left" /></svg> Anterior
+                                    </a>
+                                </li>
+
+                                <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+                                    <li class="page-item <?= $i === $paginaActual ? 'active' : '' ?>">
+                                        <a class="page-link" href="gestion_reservas.php?estado=<?= urlencode($estadoActual) ?>&q=<?= urlencode($busqueda) ?>&p=<?= $i ?>"><?= $i ?></a>
+                                    </li>
+                                <?php endfor; ?>
+
+                                <li class="page-item <?= $paginaActual >= $totalPaginas ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="gestion_reservas.php?estado=<?= urlencode($estadoActual) ?>&q=<?= urlencode($busqueda) ?>&p=<?= $paginaActual + 1 ?>">
+                                        Siguiente <svg class="icon"><use href="#i-arrow-right" /></svg>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    <?php endif; ?>
                 </div>
             </main>
         </div>
 
-        <!-- Modal: Cambiar contraseña -->
-        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" style="max-width: 480px">
+        <div class="modal fade" id="confirmarPrestamoModal" tabindex="-1" aria-labelledby="confirmarPrestamoTitulo" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 rounded-4">
-                    <form action="" method="post" class="modal-body p-4">
-                        <div class="d-flex align-items-start gap-3 mb-4">
-                            <div class="pw-circle">
-                                <svg class="pw-icon"><use href="#i-lock" /></svg>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h2 id="changePasswordTitle" class="h4 fw-semibold mb-1" style="color: #0f5132">Cambiar contraseña</h2>
-                                <p class="mb-0 small" style="color: #4b5563">Escribe tu contraseña actual y elige una nueva.</p>
+                    <form method="POST" action="gestion_reservas.php?estado=activas">
+                        <div class="modal-header border-bottom px-4 py-3">
+                            <div>
+                                <h2 id="confirmarPrestamoTitulo" class="h5 fw-semibold section-green-title mb-0">Confirmar préstamo</h2>
+                                <p class="small text-secondary mb-0">Verifica credencial o recibo y comprobante antes de entregar.</p>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="pwActual" class="form-label fw-medium">Contraseña actual</label>
-                            <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#i-lock" /></svg>
-                                <input
-                                    type="password"
-                                    id="pwActual"
-                                    class="form-control"
-                                    placeholder="Escribe tu contraseña actual"
-                                    autocomplete="current-password"
-                                    required
-                                />
-                                <button type="button" class="pw-toggle" data-target="pwActual" aria-label="Mostrar contraseña">
-                                    <svg class="pw-icon"><use href="#pw-eye" /></svg>
-                                </button>
+                        <div class="modal-body px-4 py-3">
+                            <input type="hidden" name="id_reserva" id="modal_id_reserva" value="" />
+
+                            <div class="mb-3">
+                                <div class="modal-summary-row">
+                                    <span class="text-secondary">Folio</span>
+                                    <strong id="modal_folio"></strong>
+                                </div>
+                                <div class="modal-summary-row">
+                                    <span class="text-secondary">Lector</span>
+                                    <span id="modal_lector" class="text-end"></span>
+                                </div>
+                                <div class="modal-summary-row">
+                                    <span class="text-secondary">Libro</span>
+                                    <span id="modal_libro" class="text-end"></span>
+                                </div>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="id_tipo_prestamo" class="form-label fw-medium">Tipo de préstamo</label>
+                                <select name="id_tipo_prestamo" id="id_tipo_prestamo" class="form-select">
+                                    <?php if ($resTiposPrestamo && mysqli_num_rows($resTiposPrestamo) > 0): ?>
+                                        <?php while ($tipo = mysqli_fetch_assoc($resTiposPrestamo)): ?>
+                                            <option value="<?= (int)$tipo['id_tipo_prestamo'] ?>">
+                                                <?= htmlspecialchars($tipo['tipo']) ?>
+                                            </option>
+                                        <?php endwhile; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+
+                            <p class="small text-secondary mb-0">
+                                Fecha límite de devolución asignada: <strong id="modal_fecha_devolucion" class="text-dark"></strong>
+                            </p>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="pwNueva" class="form-label fw-medium">Contraseña nueva</label>
-                            <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#i-lock" /></svg>
-                                <input
-                                    type="password"
-                                    id="pwNueva"
-                                    class="form-control"
-                                    placeholder="Escribe tu contraseña nueva"
-                                    minlength="8"
-                                    autocomplete="new-password"
-                                    required
-                                />
-                                <button type="button" class="pw-toggle" data-target="pwNueva" aria-label="Mostrar contraseña">
-                                    <svg class="pw-icon"><use href="#pw-eye" /></svg>
-                                </button>
-                            </div>
-                            <div class="form-text">Mínimo 8 caracteres.</div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="pwConfirmar" class="form-label fw-medium">Confirmar contraseña nueva</label>
-                            <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#i-lock" /></svg>
-                                <input
-                                    type="password"
-                                    id="pwConfirmar"
-                                    class="form-control"
-                                    placeholder="Repite tu contraseña nueva"
-                                    minlength="8"
-                                    autocomplete="new-password"
-                                    required
-                                />
-                                <button type="button" class="pw-toggle" data-target="pwConfirmar" aria-label="Mostrar contraseña">
-                                    <svg class="pw-icon"><use href="#pw-eye" /></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn px-4 text-white fw-medium" style="background-color: #0f5132">Guardar</button>
+                        <div class="modal-footer border-top px-4 py-3">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-brand">Confirmar entrega</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
-        <script>
-            // Mostrar u ocultar la contraseña
-            document.querySelectorAll(".pw-toggle").forEach(function (b) {
-                b.addEventListener("click", function () {
-                    var campo = document.getElementById(b.dataset.target);
-                    var visible = campo.type === "text";
-                    campo.type = visible ? "password" : "text";
-                    b.querySelector("use").setAttribute("href", visible ? "#pw-eye" : "#pw-eye-off");
-                });
-            });
-        </script>
-
-        <script src="./js/bootstrap.bundle.min.js"></script>
+         <?php
+        if ($stmtList) {
+            mysqli_stmt_close($stmtList);
+        }
+        include "includes/footer.php";
+        ?>
+        <script src="./js/ver_password.js"></script>
+        <script src="./js/gestion_reservas.js"></script>
     </body>
 </html>

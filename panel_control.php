@@ -587,8 +587,8 @@
                             >
                         </li>
                         <li>
-                            <a href="publicacion_catalogo.php"
-                                ><svg class="icon"><use href="#i-book-open" /></svg> Publicación en catálogo</a
+                            <a href="inventario_libros.php"
+                                ><svg class="icon"><use href="#i-book-open" /></svg> Inventario de libros</a
                             >
                         </li>
                         <li>
