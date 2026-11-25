@@ -13,6 +13,7 @@
 
         <link rel="stylesheet" href="./css/bootstrap.min.css" />
         <link rel="stylesheet" href="./css/inicio.css" />
+        <link rel="stylesheet" href="./css/footer.css" />
     </head>
 
     <body>
@@ -322,51 +323,7 @@
         </main>
 
         <!-- Pie de pagina -->
-        <footer class="site-footer" id="contacto">
-            <div class="container">
-                <div class="row g-4">
-                    <div class="col-lg-5">
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="./img/logo-cbta5-blanco.png" alt="Logotipo del CBTa No. 5" class="footer-logo" />
-                            <div>
-                                <p class="footer-brand mb-0">Biblioteca Escolar</p>
-                                <p class="mb-1">CBTa No. 5 · Huejutla, Hgo.</p>
-                                <p class="mb-0">Más que libros, conectamos ideas</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-7 col-lg-4">
-                        <h3>Contacto</h3>
-                        <ul class="contact-list">
-                            <li>
-                                <svg class="icon"><use href="#i-map-pin" /></svg>
-                                <span>CBTa No. 5, Huejutla de Reyes, Hgo.</span>
-                            </li>
-                            <li>
-                                <svg class="icon"><use href="#i-mail" /></svg>
-                                <span>[correo de la biblioteca]</span>
-                            </li>
-                            <li>
-                                <svg class="icon"><use href="#i-phone" /></svg>
-                                <span>[teléfono de la biblioteca]</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="col-sm-5 col-lg-3">
-                        <h3>Información</h3>
-                        <ul class="footer-links">
-                            <li><a href="nosotros.php">Nosotros</a></li>
-                            <li><a href="preguntas.php">Preguntas frecuentes</a></li>
-                            <li><a href="politicas.php">Políticas y condiciones del servicio bibliotecario</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="footer-bottom">© 2026 CBTa No. 5 · Biblioteca Escolar</div>
-            </div>
-        </footer>
+        <?php include "includes/footer.php"; ?>
 
         <script src="./js/bootstrap.bundle.min.js"></script>
     </body>

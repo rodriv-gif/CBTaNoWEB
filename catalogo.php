@@ -371,14 +371,6 @@
                 height: 16px;
             }
 
-            /* ---------- Pie de página ---------- */
-            .site-footer {
-                background-color: var(--green-dark);
-                color: #ffffff;
-                text-align: center;
-                font-size: 14px;
-                padding: 16px 0;
-            }
             .tag {
                 display: inline-flex;
                 align-items: center;
@@ -393,6 +385,7 @@
                 background-color: var(--green-soft);
             }
         </style>
+        <link rel="stylesheet" href="./css/footer.css" />
     </head>
 
     <body class="d-flex flex-column min-vh-100">
@@ -691,7 +684,7 @@
             </div>
         </main>
 
-        <footer class="site-footer">© 2026 CBTa No. 5 · Biblioteca Escolar</footer>
+        <?php include "includes/footer.php"; ?>
 
         <script src="./js/bootstrap.bundle.min.js"></script>
     </body>

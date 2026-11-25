@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
             // 3. ¿Es alumno o docente? (se busca por matrícula o número de control)
             $consulta = $pdo->prepare(
-                "SELECT c.id_cuenta, c.matricula, c.numero_control, c.contrasenia,
+                "SELECT c.id_cuenta, c.matricula, c.numero_control, c.contrasenia, c.activa,
                         COALESCE(a.nombre, t.nombre) AS nombre,
                         COALESCE(a.estado, t.estado) AS estado
                  FROM tblcuentas_lector c
@@ -54,7 +54,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $lector = $consulta->fetch();
 
             if ($lector && contrasenia_correcta($password, $lector["contrasenia"])) {
-                if ($lector["estado"] !== "Activo") {
+                if ($lector["activa"] != 1) {
+                    $error = "Tu cuenta aún no está activada. Revisa tu correo y abre el enlace de activación.";
+                } elseif ($lector["estado"] !== "Activo") {
                     $error = "Tu cuenta está inactiva. Acércate a la biblioteca.";
                 } else {
                     $_SESSION["tipo"] = "lector";
@@ -100,6 +102,7 @@ $texto_info = "Entra con tu matrícula o clave para consultar el catálogo, rese
         <link rel="stylesheet" href="./css/bootstrap.min.css" />
         <link rel="stylesheet" href="./css/estilos.css" />
         <link rel="stylesheet" href="./css/login.css" />
+        <link rel="stylesheet" href="./css/footer.css" />
     </head>
 
     <body class="d-flex flex-column min-vh-100">
