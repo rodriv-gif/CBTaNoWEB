@@ -1,3 +1,9 @@
+<?php
+require "includes/sesion.php";
+exigir_bibliotecario();
+require "config/conexion.php";
+$pagina_activa = "datos_biblioteca_horario.php";
+?>
 <!doctype html>
 <html lang="es">
     <head>
@@ -12,6 +18,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
         <link rel="stylesheet" href="./css/bootstrap.min.css" />
+        <link rel="stylesheet" href="./css/bibliotecario.css" />
 
         <style>
             /* Colores de la guia de estilos */
@@ -933,71 +940,7 @@
 
         <div class="admin-layout">
             <!-- Menu lateral del bibliotecario -->
-            <aside class="sidebar">
-                <a href="panel_control.php" class="sidebar-brand">
-                    <img src="./img/logo-cbta5-blanco.png" alt="Logotipo del CBTa No. 5" />
-                    <span>
-                        <span class="brand-name">Biblioteca Escolar</span>
-                        <span class="brand-sub">CBTa No. 5 · Huejutla, Hgo.</span>
-                    </span>
-                </a>
-
-                <div class="sidebar-main">
-                    <ul class="sidebar-menu">
-                        <li>
-                            <a href="gestion_reservas.php">
-                                <svg class="icon"><use href="#i-clipboard-list" /></svg> Gestión de reservas
-                            </a>
-                        </li>
-                        <li>
-                            <a href="inventario_libros.php">
-                                <svg class="icon"><use href="#i-book-open" /></svg> Inventario de libros
-                            </a>
-                        </li>
-                        <li>
-                            <a href="panel_control.php">
-                                <svg class="icon"><use href="#i-layout-dashboard" /></svg> Panel de control
-                            </a>
-                        </li>
-                        <li>
-                            <a href="datos_biblioteca.php" class="parent-active">
-                                <svg class="icon"><use href="#i-building" /></svg> Datos de la biblioteca
-                                <svg class="icon chevron"><use href="#i-chevron-down" /></svg>
-                            </a>
-                            <ul class="submenu">
-                                <li><a href="datos_biblioteca.php">Información general</a></li>
-                                <li><a href="datos_biblioteca_horario.php" class="active" aria-current="page">Horario y contacto</a></li>
-                                <li><a href="datos_biblioteca_inicio.php">Contenido del inicio</a></li>
-                                <li><a href="datos_biblioteca_preguntas.php">Preguntas frecuentes</a></li>
-                                <li><a href="datos_biblioteca_politicas.php">Políticas del servicio</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="user-card">
-                    <div class="user-avatar">
-                        <svg class="icon"><use href="#i-user" /></svg>
-                    </div>
-                    <div>
-                        <span class="user-name">[Nombre completo]</span>
-                        <span class="user-role">Bibliotecario</span>
-                    </div>
-                </div>
-
-                <ul class="sidebar-menu sidebar-bottom">
-                    <li>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                            <svg class="icon"><use href="#i-lock" /></svg> Cambiar contraseña
-                        </a>
-                    </li>
-                    <li>
-                        <a href="logout.php">
-                            <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
-                        </a>
-                    </li>
-                </ul>
-            </aside>
+            <?php include "includes/sidebar_bibliotecario.php"; ?>
 
             <!-- Contenido -->
             <main class="admin-main">
@@ -1185,168 +1128,10 @@
             </main>
         </div>
 
-        <!-- Ventana: Cambiar contraseña (se abre desde "Cambiar contraseña") -->
-        <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-            <symbol id="pw-lock" viewBox="0 0 24 24">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </symbol>
-            <symbol id="pw-eye" viewBox="0 0 24 24">
-                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
-                <circle cx="12" cy="12" r="3" />
-            </symbol>
-            <symbol id="pw-eye-off" viewBox="0 0 24 24">
-                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
-                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
-                <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
-                <path d="m2 2 20 20" />
-            </symbol>
-        </svg>
-        <style>
-            .pw-icon {
-                width: 20px;
-                height: 20px;
-                fill: none;
-                stroke: currentColor;
-                stroke-width: 1.75;
-                stroke-linecap: round;
-                stroke-linejoin: round;
-            }
-            .pw-circle {
-                width: 52px;
-                height: 52px;
-                border-radius: 50%;
-                background-color: #e6f4ec;
-                color: #0f5132;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-            .pw-group {
-                position: relative;
-            }
-            .pw-group .pw-left {
-                position: absolute;
-                left: 14px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #4b5563;
-            }
-            .pw-group .form-control {
-                height: 48px;
-                padding-left: 44px;
-                padding-right: 46px;
-                border-color: #d0d5dd;
-                border-radius: 8px;
-            }
-            .pw-group .form-control:focus {
-                border-color: #2e7d58;
-                box-shadow: 0 0 0 3px rgba(46, 125, 88, 0.2);
-            }
-            .pw-group .pw-toggle {
-                position: absolute;
-                right: 6px;
-                top: 50%;
-                transform: translateY(-50%);
-                border: 0;
-                background: transparent;
-                color: #4b5563;
-                padding: 8px;
-            }
-        </style>
-        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" style="max-width: 480px">
-                <div class="modal-content border-0 rounded-4">
-                    <form action="" method="post" class="modal-body p-4">
-                        <div class="d-flex align-items-start gap-3 mb-4">
-                            <div class="pw-circle">
-                                <svg class="pw-icon"><use href="#pw-lock" /></svg>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h2 id="changePasswordTitle" class="h4 fw-semibold mb-1" style="color: #0f5132">Cambiar contraseña</h2>
-                                <p class="mb-0 small" style="color: #4b5563">Escribe tu contraseña actual y elige una nueva.</p>
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="pwActual" class="form-label fw-medium">Contraseña actual</label>
-                            <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#pw-lock" /></svg>
-                                <input
-                                    type="password"
-                                    id="pwActual"
-                                    class="form-control"
-                                    placeholder="Escribe tu contraseña actual"
-                                    autocomplete="current-password"
-                                    required
-                                />
-                                <button type="button" class="pw-toggle" data-target="pwActual" aria-label="Mostrar contraseña">
-                                    <svg class="pw-icon"><use href="#pw-eye" /></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="pwNueva" class="form-label fw-medium">Contraseña nueva</label>
-                            <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#pw-lock" /></svg>
-                                <input
-                                    type="password"
-                                    id="pwNueva"
-                                    class="form-control"
-                                    placeholder="Escribe tu contraseña nueva"
-                                    minlength="8"
-                                    autocomplete="new-password"
-                                    required
-                                />
-                                <button type="button" class="pw-toggle" data-target="pwNueva" aria-label="Mostrar contraseña">
-                                    <svg class="pw-icon"><use href="#pw-eye" /></svg>
-                                </button>
-                            </div>
-                            <div class="form-text">Mínimo 8 caracteres.</div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="pwConfirmar" class="form-label fw-medium">Confirmar contraseña nueva</label>
-                            <div class="pw-group">
-                                <svg class="pw-icon pw-left"><use href="#pw-lock" /></svg>
-                                <input
-                                    type="password"
-                                    id="pwConfirmar"
-                                    class="form-control"
-                                    placeholder="Repite tu contraseña nueva"
-                                    minlength="8"
-                                    autocomplete="new-password"
-                                    required
-                                />
-                                <button type="button" class="pw-toggle" data-target="pwConfirmar" aria-label="Mostrar contraseña">
-                                    <svg class="pw-icon"><use href="#pw-eye" /></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn px-4 text-white fw-medium" style="background-color: #0f5132">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <script>
-            // mostrar u ocultar la contraseña
-            document.querySelectorAll(".pw-toggle").forEach(function (b) {
-                b.addEventListener("click", function () {
-                    var campo = document.getElementById(b.dataset.target);
-                    var visible = campo.type === "text";
-                    campo.type = visible ? "password" : "text";
-                    b.querySelector("use").setAttribute("href", visible ? "#pw-eye" : "#pw-eye-off");
-                });
-            });
-        </script>
+        <?php include "includes/iconos.php"; ?>
+        <?php include "includes/iconos_catalogo.php"; ?>
 
         <script src="./js/bootstrap.bundle.min.js"></script>
+        <script src="./js/ver_password.js"></script>
     </body>
 </html>

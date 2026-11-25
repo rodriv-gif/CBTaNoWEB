@@ -17,3 +17,12 @@ function exigir_lector()
         exit;
     }
 }
+
+// Para las páginas del administrador: si no hay sesión de bibliotecario, manda al login
+function exigir_bibliotecario()
+{
+    if (!isset($_SESSION["id_bibliotecario"])) {
+        header("Location: login.php");
+        exit;
+    }
+}

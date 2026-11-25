@@ -516,8 +516,8 @@ $resTiposPrestamo = mysqli_query($conexion, "SELECT id_tipo_prestamo, tipo FROM 
         if ($stmtList) {
             mysqli_stmt_close($stmtList);
         }
-        include "includes/footer.php";
         ?>
+        <script src="./js/bootstrap.bundle.min.js"></script>
         <script src="./js/ver_password.js"></script>
         <script src="./js/gestion_reservas.js"></script>
     </body>

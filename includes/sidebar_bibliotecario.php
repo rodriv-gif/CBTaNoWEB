@@ -1,6 +1,17 @@
 <?php
 // Obtiene desde la base de datos el nombre completo y perfil del bibliotecario en sesión
 $pagina_activa  = $pagina_activa ?? "";
+
+// El submenú de "Datos de la biblioteca" solo se abre en sus 5 páginas
+$en_datos = strpos($pagina_activa, "datos_biblioteca") === 0;
+$submenu = [
+    "datos_biblioteca.php" => "Información general",
+    "datos_biblioteca_horario.php" => "Horario y contacto",
+    "datos_biblioteca_inicio.php" => "Contenido del inicio",
+    "datos_biblioteca_preguntas.php" => "Preguntas frecuentes",
+    "datos_biblioteca_politicas.php" => "Políticas del servicio",
+];
+
 $nombreBiblio   = $_SESSION['nombre'] ?? 'Bibliotecario';
 $perfilBiblio   = 'Bibliotecario';
 $idBiblioSesion = (int)($_SESSION['id_bibliotecario'] ?? 0);
@@ -57,10 +68,17 @@ if ($idBiblioSesion > 0 && isset($conexion)) {
                 </a>
             </li>
             <li>
-                <a href="datos_biblioteca.php" class="<?= $pagina_activa === 'datos_biblioteca.php' ? 'active' : '' ?>">
+                <a href="datos_biblioteca.php" class="<?= $en_datos ? 'parent-active' : '' ?>">
                     <svg class="icon"><use href="#i-building" /></svg> Datos de la biblioteca
-                    <svg class="icon chevron"><use href="#i-chevron-right" /></svg>
+                    <svg class="icon chevron"><use href="<?= $en_datos ? '#i-chevron-down' : '#i-chevron-right' ?>" /></svg>
                 </a>
+                <?php if ($en_datos): ?>
+                    <ul class="submenu">
+                        <?php foreach ($submenu as $archivo => $texto): ?>
+                            <li><a href="<?= $archivo ?>" class="<?= $archivo === $pagina_activa ? 'active' : '' ?>"><?= $texto ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
             </li>
         </ul>
     </div>
@@ -82,7 +100,7 @@ if ($idBiblioSesion > 0 && isset($conexion)) {
             </a>
         </li>
         <li>
-            <a href="login.php">
+            <a href="logout.php">
                 <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
             </a>
         </li>
