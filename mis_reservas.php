@@ -1,5 +1,6 @@
 <?php
-session_start();
+require "includes/sesion.php";
+exigir_lector();
 $pagina_activa = "mi_cuenta.php";
 $titulo = "Mis reservas";
 $subtitulo = "Recoge tu libro en la biblioteca antes de la fecha límite.";

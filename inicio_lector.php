@@ -320,7 +320,7 @@
                             <span class="d-flex align-items-center gap-2">
                                 <svg class="icon"><use href="#i-user" /></svg> [Nombre del lector]
                             </span>
-                            <a href="index.php" class="btn btn-brand-outline">
+                            <a href="logout.php" class="btn btn-brand-outline">
                                 <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
                             </a>
                         </div>

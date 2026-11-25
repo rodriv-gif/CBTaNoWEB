@@ -994,7 +994,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="index.php">
+                        <a href="logout.php">
                             <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
                         </a>
                     </li>

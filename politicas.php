@@ -1,3 +1,4 @@
+<?php require "includes/sesion.php"; ?>
 <!doctype html>
 <html lang="es">
     <head>
@@ -408,6 +409,7 @@
             }
         </style>
         <link rel="stylesheet" href="./css/footer.css" />
+        <link rel="stylesheet" href="./css/header_lector.css" />
     </head>
 
     <body data-bs-spy="scroll" data-bs-target="#policyIndex" data-bs-offset="40">
@@ -437,6 +439,10 @@
         </svg>
 
         <!-- Encabezado -->
+        <?php if (es_lector()): ?>
+            <?php include "includes/iconos.php"; ?>
+            <?php include "includes/header_lector.php"; ?>
+        <?php else: ?>
         <header class="site-header d-flex align-items-center">
             <nav class="navbar navbar-expand-lg py-2 w-100">
                 <div class="container">
@@ -478,6 +484,7 @@
                 </div>
             </nav>
         </header>
+        <?php endif; ?>
 
         <main class="page-block">
             <div class="container">

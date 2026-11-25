@@ -1,5 +1,6 @@
 <?php
-session_start();
+require "includes/sesion.php";
+exigir_lector();
 $pagina_activa = "mi_cuenta.php";
 
 // Tarjetas de resumen: icono, título, valor, texto, página, texto del enlace, estilo
@@ -150,6 +151,7 @@ $campos = [
         </div>
 
         <?php include "includes/footer.php"; ?>
+        <script src="./js/bootstrap.bundle.min.js"></script>
         <script src="./js/ver_password.js"></script>
     </body>
 </html>

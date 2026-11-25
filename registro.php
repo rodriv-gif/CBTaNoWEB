@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+// Si ya hay sesión de lector, no tiene caso volver a pedir datos
+if (($_SESSION["tipo"] ?? "") === "lector") {
+    header("Location: mi_cuenta.php");
+    exit;
+}
 date_default_timezone_set("America/Mexico_City");
 require "config/conexion.php"; // aquí viene la conexión $pdo
 require "includes/funciones.php";

@@ -42,7 +42,7 @@ $nombre_lector = htmlspecialchars($_SESSION["nombre"] ?? "[Nombre del lector]");
                         <svg class="icon"><use href="#i-user" /></svg> <?= $nombre_lector ?>
                     </span>
                     <span class="tag tag-ok">Alumno</span>
-                    <a href="index.php" class="btn btn-brand-outline">
+                    <a href="logout.php" class="btn btn-brand-outline">
                         <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
                     </a>
                 </div>

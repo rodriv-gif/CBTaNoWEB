@@ -15,3 +15,12 @@ function ocultar_correo($correo)
     }
     return substr($partes[0], 0, 2) . "****@" . $partes[1];
 }
+
+// Cuántas veces falló la respuesta de seguridad en los últimos 15 minutos
+function intentos_recuperacion($pdo, $clave)
+{
+    $desde = date("Y-m-d H:i:s", time() - 900);
+    $consulta = $pdo->prepare("SELECT COUNT(*) FROM tblintentos_acceso WHERE clave_acceso = ? AND exitoso = 0 AND fecha_intento >= ?");
+    $consulta->execute(["rec_" . $clave, $desde]);
+    return (int) $consulta->fetchColumn();
+}

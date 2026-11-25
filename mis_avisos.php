@@ -1,5 +1,6 @@
 <?php
-session_start();
+require "includes/sesion.php";
+exigir_lector();
 $pagina_activa = "mi_cuenta.php";
 $titulo = "Mis avisos";
 $subtitulo = "Del más reciente al más antiguo.";

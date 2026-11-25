@@ -1,3 +1,27 @@
+<?php
+    // Un lector con sesión iniciada va directo a su cuenta
+    require "includes/sesion.php";
+    if (es_lector()) {
+        header("Location: mi_cuenta.php");
+        exit;
+    }
+
+    // Conexión a la base de datos
+    require "config/conexion.php";
+
+    // Trae 12 libros publicados y activos para el mini catálogo
+    $consulta = $pdo->prepare("
+        SELECT p.id_libro, p.portada, l.titulo_libro, c.nombre AS categoria
+        FROM tblpublicacion_catalogo p
+        INNER JOIN tbllibros l ON l.id_libro = p.id_libro
+        INNER JOIN tblcategorias c ON c.id_categoria = l.id_categoria
+        WHERE p.publicado = 1 AND l.estado = 'Activo'
+        ORDER BY p.fecha_publicacion DESC
+        LIMIT 12
+    ");
+    $consulta->execute();
+    $books = $consulta->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!doctype html>
 <html lang="es">
     <head>
@@ -286,15 +310,21 @@
                     <p class="section-subtitle">Algunos de los libros que puedes encontrar en la biblioteca.</p>
 
                     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
-                        <?php for ($i = 0; $i < 12; $i++): ?>
+                        <?php foreach ($books as $book): ?>
                             <div class="col">
                                 <a href="login.php" class="book-card d-block text-decoration-none">
-                                    <div class="book-cover d-flex align-items-center justify-content-center text-center">[Título del libro]</div>
-                                    <h3 class="book-title">[Título del libro]</h3>
-                                    <p class="book-category">[Categoría]</p>
+                                    <img src="upload/libros/principales/<?= htmlspecialchars($book["portada"]) ?>"
+                                         alt="Portada de <?= htmlspecialchars($book["titulo_libro"]) ?>"
+                                         class="book-cover w-100" />
+                                    <h3 class="book-title"><?= htmlspecialchars($book["titulo_libro"]) ?></h3>
+                                    <p class="book-category"><?= htmlspecialchars($book["categoria"]) ?></p>
                                 </a>
                             </div>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
+
+                        <?php if (empty($books)): ?>
+                            <p class="text-secondary">Por ahora no hay libros publicados.</p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pt-4 border-top">

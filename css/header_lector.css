@@ -1,0 +1,25 @@
+/* Encabezado del lector cuando se muestra dentro de las páginas públicas (nosotros, preguntas, políticas) */
+.bell-badge {
+    font-size: 11px;
+}
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.tag-ok {
+    color: var(--green-success);
+    background-color: var(--green-soft);
+}
+.site-header .text-white {
+    font-size: 14px;
+}
+.site-header .btn-brand-outline {
+    gap: 8px;
+    font-size: 14px;
+}

@@ -1,3 +1,8 @@
+<?php
+require "includes/sesion.php";
+exigir_lector();
+$pagina_activa = "catalogo.php";
+?>
 <!doctype html>
 <html lang="es">
     <head>
@@ -427,53 +432,7 @@
             </symbol>
         </svg>
 
-        <header class="site-header d-flex align-items-center">
-            <nav class="navbar navbar-expand-lg w-100">
-                <div class="container">
-                    <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="mi_cuenta.php">
-                        <img src="./img/logo-cbta5-blanco.png" alt="Logotipo del CBTa No. 5" class="brand-logo" />
-                        <span>
-                            <span class="brand-name d-block">Biblioteca Escolar</span>
-                            <span class="brand-sub d-block">CBTa No. 5 · Huejutla, Hgo.</span>
-                        </span>
-                    </a>
-
-                    <button
-                        class="navbar-toggler border-light"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#mainMenu"
-                        aria-controls="mainMenu"
-                        aria-expanded="false"
-                        aria-label="Abrir menú"
-                    >
-                        <span class="navbar-toggler-icon" style="filter: invert(1)"></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="mainMenu">
-                        <ul class="navbar-nav mx-lg-auto mb-3 mb-lg-0 gap-lg-2">
-                            <li class="nav-item"><a class="nav-link" href="mi_cuenta.php">Mi cuenta</a></li>
-                            <li class="nav-item"><a class="nav-link active" href="catalogo.php" aria-current="page">Catálogo</a></li>
-                            <li class="nav-item"><a class="nav-link" href="ayuda.php">Ayuda</a></li>
-                        </ul>
-
-                        <div class="d-flex align-items-center gap-3 text-white">
-                            <a href="mi_cuenta.php" class="position-relative text-white" aria-label="2 avisos nuevos">
-                                <svg class="icon" style="width: 24px; height: 24px"><use href="#i-bell" /></svg>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bell-badge">2</span>
-                            </a>
-                            <span class="d-flex align-items-center gap-2">
-                                <svg class="icon"><use href="#i-user" /></svg> [Nombre del lector]
-                            </span>
-                            <span class="tag tag-ok">Alumno</span>
-                            <a href="index.php" class="btn btn-brand-outline">
-                                <svg class="icon"><use href="#i-log-out" /></svg> Cerrar sesión
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        </header>
+        <?php include "includes/header_lector.php"; ?>
 
         <main class="flex-grow-1">
             <div class="container py-4">
